@@ -28,7 +28,7 @@ export const users = pgTable("users", {
   password: text("password").notNull(),
   email: text("email").notNull(),
   phone: text("phone").notNull(),
-  role: text("role", { enum: Object.values(UserRole) }).notNull(),
+  role: text("role", { enum: ['STUDENT', 'TEACHER', 'ADMIN'] }).notNull(),
   subgroupId: integer("subgroup_id").references(() => subgroups.id),
 });
 
@@ -67,8 +67,8 @@ export const exams = pgTable("exams", {
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
   maxPoints: integer("max_points").notNull(),
-  status: text("status", { enum: Object.values(ExamStatus) }).notNull(),
-  type: text("type", { enum: Object.values(ExamType) }).notNull(),
+  status: text("status", { enum: ['UPCOMING', 'IN_PROGRESS', 'FINISHED', 'CANCELED'] }).notNull(),
+  type: text("type", { enum: ['MIDTERM', 'GENERAL', 'REPEAT'] }).notNull(),
 });
 
 export const examResults = pgTable("exam_results", {
