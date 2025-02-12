@@ -9,6 +9,10 @@ import StudentDashboard from "@/pages/student-dashboard";
 import TeacherDashboard from "@/pages/teacher-dashboard";
 import AdminDashboard from "@/pages/admin-dashboard";
 import CourseDetails from "@/pages/course-details";
+import DepartmentDetails from "@/pages/department-details";
+import GroupDetails from "@/pages/group-details";
+import StudentDetails from "@/pages/student-details";
+import TeacherDetails from "@/pages/teacher-details";
 import { ProtectedRoute } from "./lib/protected-route";
 import { UserRole } from "@shared/schema";
 
@@ -34,7 +38,27 @@ function Router() {
       <ProtectedRoute 
         path="/course/:courseId" 
         component={CourseDetails}
-        allowedRoles={[UserRole.STUDENT]} 
+        allowedRoles={[UserRole.STUDENT, UserRole.TEACHER]} 
+      />
+      <ProtectedRoute 
+        path="/department/:departmentId" 
+        component={DepartmentDetails}
+        allowedRoles={[UserRole.ADMIN]} 
+      />
+      <ProtectedRoute 
+        path="/group/:groupId" 
+        component={GroupDetails}
+        allowedRoles={[UserRole.ADMIN, UserRole.TEACHER]} 
+      />
+      <ProtectedRoute 
+        path="/student/:studentId" 
+        component={StudentDetails}
+        allowedRoles={[UserRole.ADMIN, UserRole.TEACHER]} 
+      />
+      <ProtectedRoute 
+        path="/teacher/:teacherId" 
+        component={TeacherDetails}
+        allowedRoles={[UserRole.ADMIN]} 
       />
       <Route component={NotFound} />
     </Switch>
