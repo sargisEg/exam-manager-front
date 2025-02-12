@@ -1,29 +1,58 @@
-import { useQuery } from "@tanstack/react-query";
 import { ExamCalendar } from "@/components/exam-calendar";
 import { DataTable } from "@/components/data-table";
 import { Navbar } from "@/components/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Exam, ExamResult } from "@shared/schema";
+import { Exam, ExamResult, ExamStatus, ExamType } from "@shared/schema";
 import { format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
 
+// Hardcoded test data
+const TEST_EXAMS: Exam[] = [
+  {
+    id: 1,
+    title: "Mathematics Midterm",
+    courseId: 1,
+    subgroupId: 1,
+    location: "Room 101",
+    startDate: new Date("2025-02-20T10:00:00"),
+    endDate: new Date("2025-02-20T12:00:00"),
+    maxPoints: 100,
+    status: ExamStatus.UPCOMING,
+    type: ExamType.MIDTERM,
+  },
+  {
+    id: 2,
+    title: "Physics Final",
+    courseId: 2,
+    subgroupId: 1,
+    location: "Room 102",
+    startDate: new Date("2025-03-15T14:00:00"),
+    endDate: new Date("2025-03-15T16:00:00"),
+    maxPoints: 100,
+    status: ExamStatus.UPCOMING,
+    type: ExamType.GENERAL,
+  },
+];
+
+const TEST_RESULTS: (ExamResult & { exam: Exam })[] = [
+  {
+    id: 1,
+    studentId: 1,
+    examId: 1,
+    points: 85,
+    exam: TEST_EXAMS[0],
+  },
+];
+
 export default function StudentDashboard() {
-  const { data: exams } = useQuery<Exam[]>({
-    queryKey: ["/api/student/exams"],
-  });
-
-  const { data: results } = useQuery<ExamResult[]>({
-    queryKey: ["/api/student/results"],
-  });
-
-  const columns: ColumnDef<ExamResult>[] = [
+  const columns: ColumnDef<ExamResult & { exam: Exam }>[] = [
     {
       accessorKey: "exam.title",
       header: "Exam",
     },
     {
-      accessorKey: "exam.course.name",
-      header: "Course",
+      accessorKey: "exam.type",
+      header: "Type",
     },
     {
       accessorKey: "exam.startDate",
@@ -45,13 +74,13 @@ export default function StudentDashboard() {
       <Navbar />
       <main className="container mx-auto px-4 py-8">
         <div className="grid md:grid-cols-2 gap-6">
-          <ExamCalendar exams={exams || []} />
+          <ExamCalendar exams={TEST_EXAMS} />
           <Card>
             <CardHeader>
               <CardTitle>Recent Results</CardTitle>
             </CardHeader>
             <CardContent>
-              <DataTable columns={columns} data={results || []} />
+              <DataTable columns={columns} data={TEST_RESULTS} />
             </CardContent>
           </Card>
         </div>
