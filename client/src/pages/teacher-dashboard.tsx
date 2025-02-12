@@ -4,13 +4,12 @@ import { DataTable } from "@/components/data-table";
 import { Navbar } from "@/components/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Exam, Course, Subgroup, Group, ExamStatus, ExamType } from "@shared/schema";
 import { format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
-import { ChevronRight, Users, BookOpen } from "lucide-react";
+import { Users, BookOpen, ChevronRight } from "lucide-react";
 
 // Test data
 const TEST_COURSES: Course[] = [
@@ -159,21 +158,9 @@ export default function TeacherDashboard() {
       <main className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Teacher Dashboard</h1>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>Create Exam</Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px]">
-              <DialogHeader>
-                <DialogTitle>Create New Exam</DialogTitle>
-              </DialogHeader>
-              <ExamForm
-                onSubmit={handleCreateExam}
-                courses={TEST_COURSES}
-                subgroups={TEST_SUBGROUPS}
-              />
-            </DialogContent>
-          </Dialog>
+          <Button onClick={() => toast({ title: "Coming soon", description: "Exam creation will be available soon" })}>
+            Create Exam
+          </Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 mb-8">

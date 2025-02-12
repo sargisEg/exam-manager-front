@@ -3,11 +3,12 @@ import { DataTable } from "@/components/data-table";
 import { Navbar } from "@/components/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { Department, Group, Subgroup, Course, User, UserRole } from "@shared/schema";
 import { ColumnDef } from "@tanstack/react-table";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
-import { Loader2, Users, BookOpen, Building2, Layers, ChevronRight } from "lucide-react";
+import { Users, BookOpen, Building2, ChevronRight } from "lucide-react";
 
 // Test data
 const TEST_GROUPS: Group[] = [
