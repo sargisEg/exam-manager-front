@@ -2,12 +2,14 @@ import { ExamCalendar } from "@/components/exam-calendar";
 import { DataTable } from "@/components/data-table";
 import { Navbar } from "@/components/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Exam, ExamResult, ExamStatus, ExamType, Course } from "@shared/schema";
+import { Exam, ExamStatus, ExamType, Course } from "@shared/schema";
 import { format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
+import { useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
+import { ChevronRight } from "lucide-react";
 
-// Hardcoded test data
+// Test data
 const TEST_EXAMS: Exam[] = [
   {
     id: 1,
@@ -41,45 +43,33 @@ const TEST_COURSES: Course[] = [
   { id: 3, name: "Computer Science", groupId: 1 },
 ];
 
-const TEST_RESULTS: (ExamResult & { exam: Exam })[] = [
-  {
-    id: 1,
-    studentId: 1,
-    examId: 1,
-    points: 85,
-    exam: TEST_EXAMS[0],
-  },
-];
+const TEST_USER_INFO = {
+  department: "Computer Science",
+  group: "CS-2025",
+  subgroup: "CS-2025-A",
+};
 
 export default function StudentDashboard() {
-  const examColumns: ColumnDef<ExamResult & { exam: Exam }>[] = [
-    {
-      accessorKey: "exam.title",
-      header: "Exam",
-    },
-    {
-      accessorKey: "exam.type",
-      header: "Type",
-    },
-    {
-      accessorKey: "exam.startDate",
-      header: "Date",
-      cell: ({ row }) => format(new Date(row.original.exam.startDate), "PPP"),
-    },
-    {
-      accessorKey: "points",
-      header: "Points",
-    },
-    {
-      accessorKey: "exam.maxPoints",
-      header: "Max Points",
-    },
-  ];
+  const [, navigate] = useLocation();
 
   const courseColumns: ColumnDef<Course>[] = [
     {
       accessorKey: "name",
       header: "Course Name",
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => {
+        return (
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(`/course/${row.original.id}`)}
+          >
+            View Course <ChevronRight className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
     },
   ];
 
@@ -87,28 +77,41 @@ export default function StudentDashboard() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-6">
-          <ExamCalendar exams={TEST_EXAMS} />
-        </div>
+        <div className="grid gap-6 md:grid-cols-[1fr_300px]">
+          <div className="space-y-6">
+            <ExamCalendar exams={TEST_EXAMS} />
 
-        <div className="grid gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>My Courses</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <DataTable columns={courseColumns} data={TEST_COURSES} />
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader>
+                <CardTitle>My Courses</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <DataTable columns={courseColumns} data={TEST_COURSES} />
+              </CardContent>
+            </Card>
+          </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Results</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <DataTable columns={examColumns} data={TEST_RESULTS} />
-            </CardContent>
-          </Card>
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Student Information</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div>
+                  <div className="text-sm font-medium text-muted-foreground">Department</div>
+                  <div>{TEST_USER_INFO.department}</div>
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-muted-foreground">Group</div>
+                  <div>{TEST_USER_INFO.group}</div>
+                </div>
+                <div>
+                  <div className="text-sm font-medium text-muted-foreground">Subgroup</div>
+                  <div>{TEST_USER_INFO.subgroup}</div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </main>
     </div>

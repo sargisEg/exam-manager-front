@@ -8,6 +8,7 @@ import AuthPage from "@/pages/auth-page";
 import StudentDashboard from "@/pages/student-dashboard";
 import TeacherDashboard from "@/pages/teacher-dashboard";
 import AdminDashboard from "@/pages/admin-dashboard";
+import CourseDetails from "@/pages/course-details";
 import { ProtectedRoute } from "./lib/protected-route";
 import { UserRole } from "@shared/schema";
 
@@ -29,6 +30,11 @@ function Router() {
         path="/admin" 
         component={AdminDashboard}
         allowedRoles={[UserRole.ADMIN]} 
+      />
+      <ProtectedRoute 
+        path="/course/:courseId" 
+        component={CourseDetails}
+        allowedRoles={[UserRole.STUDENT]} 
       />
       <Route component={NotFound} />
     </Switch>

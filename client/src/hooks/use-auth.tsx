@@ -10,7 +10,7 @@ const TEST_USER: User = {
   password: "test",
   email: "test@example.com",
   phone: "1234567890",
-  role: UserRole.TEACHER, // Change this to test different roles
+  role: UserRole.ADMIN, // Change this to test different roles
   subgroupId: null,
 };
 
