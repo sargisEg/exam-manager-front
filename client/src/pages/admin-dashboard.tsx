@@ -3,18 +3,11 @@ import { DataTable } from "@/components/data-table";
 import { Navbar } from "@/components/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Department, Group, Subgroup, Course, User, UserRole } from "@shared/schema";
 import { ColumnDef } from "@tanstack/react-table";
 import { useToast } from "@/hooks/use-toast";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Loader2, Users, BookOpen, Building2, Layers } from "lucide-react";
+import { useLocation } from "wouter";
+import { Loader2, Users, BookOpen, Building2, Layers, ChevronRight } from "lucide-react";
 
 // Test data
 const TEST_GROUPS: Group[] = [
@@ -62,94 +55,127 @@ const TEST_DEPARTMENTS: Department[] = [
   { id: 2, name: "Mechanical Engineering", nameShort: "ME", headOfDepartmentId: 2 },
 ];
 
-const userColumns: ColumnDef<User>[] = [
-  {
-    accessorKey: "name",
-    header: "Name",
-  },
-  {
-    accessorKey: "email",
-    header: "Email",
-  },
-  {
-    accessorKey: "role",
-    header: "Role",
-  },
-];
-
-const departmentColumns: ColumnDef<Department>[] = [
-  {
-    accessorKey: "name",
-    header: "Name",
-  },
-  {
-    accessorKey: "nameShort",
-    header: "Short Name",
-  },
-];
-
-const groupColumns: ColumnDef<Group>[] = [
-  {
-    accessorKey: "name",
-    header: "Name",
-  },
-  {
-    accessorKey: "startYear",
-    header: "Start Year",
-  },
-  {
-    accessorKey: "endYear",
-    header: "End Year",
-  },
-];
-
-const subgroupColumns: ColumnDef<Subgroup>[] = [
-  {
-    accessorKey: "name",
-    header: "Name",
-  },
-  {
-    accessorKey: "groupId",
-    header: "Group ID",
-  },
-];
-
-const courseColumns: ColumnDef<Course>[] = [
-  {
-    accessorKey: "name",
-    header: "Name",
-  },
-  {
-    accessorKey: "groupId",
-    header: "Group ID",
-  },
-];
-
-const stats = [
-  {
-    title: "Total Users",
-    value: TEST_USERS.length,
-    icon: Users,
-  },
-  {
-    title: "Departments",
-    value: TEST_DEPARTMENTS.length,
-    icon: Building2,
-  },
-  {
-    title: "Groups",
-    value: TEST_GROUPS.length,
-    icon: Layers,
-  },
-  {
-    title: "Courses",
-    value: TEST_COURSES.length,
-    icon: BookOpen,
-  },
-];
-
 export default function AdminDashboard() {
   const { toast } = useToast();
+  const [, navigate] = useLocation();
+
+  const teacherColumns: ColumnDef<User>[] = [
+    {
+      accessorKey: "name",
+      header: "Name",
+    },
+    {
+      accessorKey: "email",
+      header: "Email",
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate(`/teacher/${row.original.id}`)}
+        >
+          View Details <ChevronRight className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+    },
+  ];
+
+  const studentColumns: ColumnDef<User>[] = [
+    {
+      accessorKey: "name",
+      header: "Name",
+    },
+    {
+      accessorKey: "email",
+      header: "Email",
+    },
+    {
+      id: "group",
+      header: "Group",
+      cell: ({ row }) => {
+        const subgroup = TEST_SUBGROUPS.find(sg => sg.id === row.original.subgroupId);
+        const group = subgroup ? TEST_GROUPS.find(g => g.id === subgroup.groupId) : null;
+        return group?.name || "-";
+      },
+    },
+    {
+      id: "subgroup",
+      header: "Subgroup",
+      cell: ({ row }) => {
+        const subgroup = TEST_SUBGROUPS.find(sg => sg.id === row.original.subgroupId);
+        return subgroup?.name || "-";
+      },
+    },
+    {
+      id: "actions",
+      cell: ({ row }) => (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => navigate(`/student/${row.original.id}`)}
+        >
+          View Details <ChevronRight className="ml-2 h-4 w-4" />
+        </Button>
+      ),
+    },
+  ];
+
+  const departmentColumns: ColumnDef<Department>[] = [
+    {
+      accessorKey: "name",
+      header: "Name",
+    },
+    {
+      accessorKey: "nameShort",
+      header: "Short Name",
+    },
+    {
+      id: "groups",
+      header: "Groups",
+      cell: ({ row }) => {
+        const groups = TEST_GROUPS.filter(g => true); // In real app, filter by department
+        return (
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground text-sm">
+              {groups.length} groups
+            </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(`/department/${row.original.id}`)}
+            >
+              View Groups <ChevronRight className="ml-2 h-4 w-4" />
+            </Button>
+          </div>
+        );
+      },
+    },
+  ];
+
+  const stats = [
+    {
+      title: "Total Users",
+      value: TEST_USERS.length,
+      icon: Users,
+    },
+    {
+      title: "Teachers",
+      value: TEST_USERS.filter(u => u.role === UserRole.TEACHER).length,
+      icon: Users,
+    },
+    {
+      title: "Students",
+      value: TEST_USERS.filter(u => u.role === UserRole.STUDENT).length,
+      icon: Users,
+    },
+    {
+      title: "Departments",
+      value: TEST_DEPARTMENTS.length,
+      icon: Building2,
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -175,70 +201,51 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        <Tabs defaultValue="users">
-          <TabsList>
-            <TabsTrigger value="users">Users</TabsTrigger>
-            <TabsTrigger value="departments">Departments</TabsTrigger>
-            <TabsTrigger value="groups">Groups</TabsTrigger>
-            <TabsTrigger value="subgroups">Subgroups</TabsTrigger>
-            <TabsTrigger value="courses">Courses</TabsTrigger>
-          </TabsList>
+        <div className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Department Structure</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DataTable columns={departmentColumns} data={TEST_DEPARTMENTS} />
+            </CardContent>
+          </Card>
 
-          <TabsContent value="users">
-            <Card>
-              <CardHeader>
-                <CardTitle>User Management</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <DataTable columns={userColumns} data={TEST_USERS} />
-              </CardContent>
-            </Card>
-          </TabsContent>
+          <Tabs defaultValue="teachers">
+            <TabsList>
+              <TabsTrigger value="teachers">Teachers</TabsTrigger>
+              <TabsTrigger value="students">Students</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="departments">
-            <Card>
-              <CardHeader>
-                <CardTitle>Department Management</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <DataTable columns={departmentColumns} data={TEST_DEPARTMENTS} />
-              </CardContent>
-            </Card>
-          </TabsContent>
+            <TabsContent value="teachers">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Teachers</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <DataTable 
+                    columns={teacherColumns} 
+                    data={TEST_USERS.filter(u => u.role === UserRole.TEACHER)} 
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
 
-          <TabsContent value="groups">
-            <Card>
-              <CardHeader>
-                <CardTitle>Group Management</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <DataTable columns={groupColumns} data={TEST_GROUPS} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="subgroups">
-            <Card>
-              <CardHeader>
-                <CardTitle>Subgroup Management</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <DataTable columns={subgroupColumns} data={TEST_SUBGROUPS} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="courses">
-            <Card>
-              <CardHeader>
-                <CardTitle>Course Management</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <DataTable columns={courseColumns} data={TEST_COURSES} />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+            <TabsContent value="students">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Students</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <DataTable 
+                    columns={studentColumns} 
+                    data={TEST_USERS.filter(u => u.role === UserRole.STUDENT)} 
+                  />
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </div>
       </main>
     </div>
   );
