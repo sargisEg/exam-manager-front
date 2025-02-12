@@ -8,122 +8,148 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Department, User, UserRole } from "@shared/schema";
+import { Department, Group, Subgroup, Course, User, UserRole } from "@shared/schema";
 import { ColumnDef } from "@tanstack/react-table";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest, queryClient } from "@/lib/queryClient";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, Users, BookOpen, Building2 } from "lucide-react";
+import { Loader2, Users, BookOpen, Building2, Layers } from "lucide-react";
 
-const departmentSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  nameShort: z.string().min(1, "Short name is required"),
-  headOfDepartmentId: z.number(),
-});
+// Test data
+const TEST_GROUPS: Group[] = [
+  { id: 1, name: "CS-2025", startYear: 2025, endYear: 2029 },
+  { id: 2, name: "ME-2025", startYear: 2025, endYear: 2029 },
+];
 
-type DepartmentFormData = z.infer<typeof departmentSchema>;
+const TEST_SUBGROUPS: Subgroup[] = [
+  { id: 1, name: "CS-2025-A", groupId: 1 },
+  { id: 2, name: "CS-2025-B", groupId: 1 },
+  { id: 3, name: "ME-2025-A", groupId: 2 },
+];
+
+const TEST_COURSES: Course[] = [
+  { id: 1, name: "Introduction to Programming", groupId: 1 },
+  { id: 2, name: "Data Structures", groupId: 1 },
+  { id: 3, name: "Mechanics", groupId: 2 },
+];
+
+const TEST_USERS: User[] = [
+  {
+    id: 1,
+    name: "John Doe",
+    username: "john",
+    password: "test",
+    email: "john@example.com",
+    phone: "1234567890",
+    role: UserRole.STUDENT,
+    subgroupId: 1,
+  },
+  {
+    id: 2,
+    name: "Jane Smith",
+    username: "jane",
+    password: "test",
+    email: "jane@example.com",
+    phone: "1234567891",
+    role: UserRole.TEACHER,
+    subgroupId: null,
+  },
+];
+
+const TEST_DEPARTMENTS: Department[] = [
+  { id: 1, name: "Computer Science", nameShort: "CS", headOfDepartmentId: 2 },
+  { id: 2, name: "Mechanical Engineering", nameShort: "ME", headOfDepartmentId: 2 },
+];
+
+const userColumns: ColumnDef<User>[] = [
+  {
+    accessorKey: "name",
+    header: "Name",
+  },
+  {
+    accessorKey: "email",
+    header: "Email",
+  },
+  {
+    accessorKey: "role",
+    header: "Role",
+  },
+];
+
+const departmentColumns: ColumnDef<Department>[] = [
+  {
+    accessorKey: "name",
+    header: "Name",
+  },
+  {
+    accessorKey: "nameShort",
+    header: "Short Name",
+  },
+];
+
+const groupColumns: ColumnDef<Group>[] = [
+  {
+    accessorKey: "name",
+    header: "Name",
+  },
+  {
+    accessorKey: "startYear",
+    header: "Start Year",
+  },
+  {
+    accessorKey: "endYear",
+    header: "End Year",
+  },
+];
+
+const subgroupColumns: ColumnDef<Subgroup>[] = [
+  {
+    accessorKey: "name",
+    header: "Name",
+  },
+  {
+    accessorKey: "groupId",
+    header: "Group ID",
+  },
+];
+
+const courseColumns: ColumnDef<Course>[] = [
+  {
+    accessorKey: "name",
+    header: "Name",
+  },
+  {
+    accessorKey: "groupId",
+    header: "Group ID",
+  },
+];
+
+const stats = [
+  {
+    title: "Total Users",
+    value: TEST_USERS.length,
+    icon: Users,
+  },
+  {
+    title: "Departments",
+    value: TEST_DEPARTMENTS.length,
+    icon: Building2,
+  },
+  {
+    title: "Groups",
+    value: TEST_GROUPS.length,
+    icon: Layers,
+  },
+  {
+    title: "Courses",
+    value: TEST_COURSES.length,
+    icon: BookOpen,
+  },
+];
 
 export default function AdminDashboard() {
   const { toast } = useToast();
-
-  const { data: departments, isLoading: loadingDepartments } = useQuery<Department[]>({
-    queryKey: ["/api/admin/departments"],
-  });
-
-  const { data: users, isLoading: loadingUsers } = useQuery<User[]>({
-    queryKey: ["/api/admin/users"],
-  });
-
-  const { data: teachers } = useQuery<User[]>({
-    queryKey: ["/api/admin/teachers"],
-  });
-
-  const departmentForm = useForm<DepartmentFormData>({
-    resolver: zodResolver(departmentSchema),
-    defaultValues: {
-      name: "",
-      nameShort: "",
-    },
-  });
-
-  const userColumns: ColumnDef<User>[] = [
-    {
-      accessorKey: "name",
-      header: "Name",
-    },
-    {
-      accessorKey: "email",
-      header: "Email",
-    },
-    {
-      accessorKey: "role",
-      header: "Role",
-    },
-    {
-      accessorKey: "phone",
-      header: "Phone",
-    },
-  ];
-
-  const departmentColumns: ColumnDef<Department>[] = [
-    {
-      accessorKey: "name",
-      header: "Name",
-    },
-    {
-      accessorKey: "nameShort",
-      header: "Short Name",
-    },
-    {
-      accessorKey: "headOfDepartment.name",
-      header: "Head of Department",
-    },
-  ];
-
-  const handleCreateDepartment = async (data: DepartmentFormData) => {
-    try {
-      await apiRequest("POST", "/api/admin/departments", data);
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/departments"] });
-      toast({
-        title: "Success",
-        description: "Department created successfully",
-      });
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: (error as Error).message,
-        variant: "destructive",
-      });
-    }
-  };
-
-  if (loadingDepartments || loadingUsers) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
-
-  const stats = [
-    {
-      title: "Total Users",
-      value: users?.length || 0,
-      icon: Users,
-    },
-    {
-      title: "Departments",
-      value: departments?.length || 0,
-      icon: Building2,
-    },
-    {
-      title: "Teachers",
-      value: users?.filter(u => u.role === UserRole.TEACHER).length || 0,
-      icon: BookOpen,
-    },
-  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -131,74 +157,9 @@ export default function AdminDashboard() {
       <main className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>Create Department</Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Create New Department</DialogTitle>
-              </DialogHeader>
-              <Form {...departmentForm}>
-                <form onSubmit={departmentForm.handleSubmit(handleCreateDepartment)} className="space-y-4">
-                  <FormField
-                    control={departmentForm.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={departmentForm.control}
-                    name="nameShort"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Short Name</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={departmentForm.control}
-                    name="headOfDepartmentId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Head of Department</FormLabel>
-                        <Select onValueChange={(value) => field.onChange(Number(value))}>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a teacher" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {teachers?.map((teacher) => (
-                              <SelectItem key={teacher.id} value={teacher.id.toString()}>
-                                {teacher.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button type="submit">Create Department</Button>
-                </form>
-              </Form>
-            </DialogContent>
-          </Dialog>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-3 mb-8">
+        <div className="grid gap-4 md:grid-cols-4 mb-8">
           {stats.map((stat) => (
             <Card key={stat.title}>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -218,15 +179,18 @@ export default function AdminDashboard() {
           <TabsList>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="departments">Departments</TabsTrigger>
+            <TabsTrigger value="groups">Groups</TabsTrigger>
+            <TabsTrigger value="subgroups">Subgroups</TabsTrigger>
+            <TabsTrigger value="courses">Courses</TabsTrigger>
           </TabsList>
-          
+
           <TabsContent value="users">
             <Card>
               <CardHeader>
                 <CardTitle>User Management</CardTitle>
               </CardHeader>
               <CardContent>
-                <DataTable columns={userColumns} data={users || []} />
+                <DataTable columns={userColumns} data={TEST_USERS} />
               </CardContent>
             </Card>
           </TabsContent>
@@ -237,7 +201,40 @@ export default function AdminDashboard() {
                 <CardTitle>Department Management</CardTitle>
               </CardHeader>
               <CardContent>
-                <DataTable columns={departmentColumns} data={departments || []} />
+                <DataTable columns={departmentColumns} data={TEST_DEPARTMENTS} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="groups">
+            <Card>
+              <CardHeader>
+                <CardTitle>Group Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <DataTable columns={groupColumns} data={TEST_GROUPS} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="subgroups">
+            <Card>
+              <CardHeader>
+                <CardTitle>Subgroup Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <DataTable columns={subgroupColumns} data={TEST_SUBGROUPS} />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="courses">
+            <Card>
+              <CardHeader>
+                <CardTitle>Course Management</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <DataTable columns={courseColumns} data={TEST_COURSES} />
               </CardContent>
             </Card>
           </TabsContent>

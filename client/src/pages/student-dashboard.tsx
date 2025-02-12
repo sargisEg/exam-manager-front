@@ -2,7 +2,8 @@ import { ExamCalendar } from "@/components/exam-calendar";
 import { DataTable } from "@/components/data-table";
 import { Navbar } from "@/components/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Exam, ExamResult, ExamStatus, ExamType } from "@shared/schema";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Exam, ExamResult, ExamStatus, ExamType, Course } from "@shared/schema";
 import { format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
 
@@ -34,6 +35,12 @@ const TEST_EXAMS: Exam[] = [
   },
 ];
 
+const TEST_COURSES: Course[] = [
+  { id: 1, name: "Mathematics", groupId: 1 },
+  { id: 2, name: "Physics", groupId: 1 },
+  { id: 3, name: "Computer Science", groupId: 1 },
+];
+
 const TEST_RESULTS: (ExamResult & { exam: Exam })[] = [
   {
     id: 1,
@@ -45,7 +52,7 @@ const TEST_RESULTS: (ExamResult & { exam: Exam })[] = [
 ];
 
 export default function StudentDashboard() {
-  const columns: ColumnDef<ExamResult & { exam: Exam }>[] = [
+  const examColumns: ColumnDef<ExamResult & { exam: Exam }>[] = [
     {
       accessorKey: "exam.title",
       header: "Exam",
@@ -69,18 +76,37 @@ export default function StudentDashboard() {
     },
   ];
 
+  const courseColumns: ColumnDef<Course>[] = [
+    {
+      accessorKey: "name",
+      header: "Course Name",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="container mx-auto px-4 py-8">
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="mb-6">
           <ExamCalendar exams={TEST_EXAMS} />
+        </div>
+
+        <div className="grid gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>My Courses</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DataTable columns={courseColumns} data={TEST_COURSES} />
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader>
               <CardTitle>Recent Results</CardTitle>
             </CardHeader>
             <CardContent>
-              <DataTable columns={columns} data={TEST_RESULTS} />
+              <DataTable columns={examColumns} data={TEST_RESULTS} />
             </CardContent>
           </Card>
         </div>
