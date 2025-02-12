@@ -1,5 +1,6 @@
 import { useParams } from "wouter";
 import { Navbar } from "@/components/navbar";
+import { BackButton } from "@/components/ui/back-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DataTable } from "@/components/data-table";
 import { Course, Exam, ExamStatus, ExamType } from "@shared/schema";
