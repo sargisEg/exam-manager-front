@@ -129,6 +129,7 @@ export default function GroupDetails() {
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="container mx-auto px-4 py-8">
+        <BackButton />
         <div className="mb-8">
           <h1 className="text-3xl font-bold">{group.name}</h1>
           <p className="text-muted-foreground">
