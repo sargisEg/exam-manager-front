@@ -3,7 +3,7 @@ import { queryClient } from "@/lib/queryClient";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { User } from "@shared/schema";
 import { UserRole } from "@shared/schema";
-import session from "express-session";
+import { addToLocalStorage } from '@/hooks/use-local-storage';
 
 const TEST_TEACHER: User = {
   id: "1",
@@ -61,17 +61,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       //   credentials: "include",
       //   body: JSON.stringify(credentials),
       // });
+      let response: User | null = null;
       if (credentials.username == "teacher@example.com") {
-        console.log("test");
-        return TEST_TEACHER;
+        response = TEST_TEACHER;
       }
-      if (credentials.username == "student@example.com") {
-        return TEST_STUDENT;
+      if (credentials.username == "student") {
+        response = TEST_STUDENT;
       }
-      // if (!response.ok) {
-      throw new Error("Login failed");
-      // }
+      if (response === null) {
+        throw new Error("Login failed");
+      }
       // return response.json();
+      return response;
     },
     onSuccess: (data) => {
       queryClient.setQueryData(["user"], data);

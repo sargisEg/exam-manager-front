@@ -6,11 +6,11 @@ import { format } from "date-fns";
 import { useLocation } from "wouter";
 
 interface ExamCalendarProps {
-  exams: Record<string, Exam>;
+  exams: Exam[];
 }
 
 export function ExamCalendar({ exams }: ExamCalendarProps) {
-  const examDates = Object.values(exams).reduce((acc, exam) => {
+  const examDates = exams.reduce((acc, exam) => {
     const date = format(new Date(exam.startDate), "yyyy-MM-dd");
     if (!acc[date]) {
       acc[date] = [];

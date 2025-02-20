@@ -9,11 +9,14 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
-
+import { getFromLocalStorage } from "@/hooks/use-local-storage";
 
 export default function StudentDashboard() {
   const [, navigate] = useLocation();
 
+  const userId = getFromLocalStorage("userId");
+  const subgroupId = getFromLocalStorage("subgrooupId");
+  
   const courseColumns: ColumnDef<Course>[] = [
     {
       accessorKey: "name",
@@ -41,7 +44,7 @@ export default function StudentDashboard() {
       <main className="container mx-auto px-4 py-8">
         <div>
           <div className="space-y-6">
-            <ExamCalendar exams={testData.TEST_EXAMS} />
+            <ExamCalendar exams={Object.values(testData.TEST_EXAMS).filter(exam => exam.subgroupId === subgroupId)} />
 
             <Card>
               <CardHeader>

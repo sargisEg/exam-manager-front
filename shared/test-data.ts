@@ -408,4 +408,4 @@ export const TEST_SUBGROUPS: Record<string, Subgroup> = {
     groupId: "e9f0a1b2-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
   },
 };
-export const TEST_EXAM_RESULTS: Record<string, ExamResult> =
+// export const TEST_EXAM_RESULTS: Record<string, ExamResult> =
