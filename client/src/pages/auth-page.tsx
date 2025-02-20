@@ -35,6 +35,11 @@ export default function AuthPage() {
     if (user) {
       addToLocalStorage("userId", user.id);
       addToLocalStorage("subgroupId", user.subgroupId);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
       switch (user.role) {
         case UserRole.STUDENT:
           setLocation("/");
