@@ -53,7 +53,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: { username: string; password: string }) => {
-      return TEST_STUDENT;
+      // const response = await fetch("/api/login", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   credentials: "include",
+      //   body: JSON.stringify(credentials),
+      // });
+      if (credentials.username == "teacher@example.com") {
+        console.log("test");
+        return TEST_TEACHER;
+      }
+      if (credentials.username == "student@example.com") {
+        return TEST_STUDENT;
+      }
+      // if (!response.ok) {
+      throw new Error("Login failed");
+      // }
+      // return response.json();
     },
     onSuccess: (data) => {
       queryClient.setQueryData(["user"], data);
@@ -84,6 +100,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (!response.ok) {
         throw new Error("Logout failed");
       }
+      queryClient.invalidateQueries();
     },
   });
 
