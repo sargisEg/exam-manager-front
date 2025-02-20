@@ -4,7 +4,7 @@ import { User } from "@shared/schema";
 import { UserRole } from "@shared/schema";
 
 const TEST_TEACHER: User = {
-  id: 1,
+  id: "1",
   name: "Test Teacher",
   password: "test",
   email: "teacher@example.com",
@@ -14,7 +14,7 @@ const TEST_TEACHER: User = {
 };
 
 const TEST_STUDENT: User = {
-  id: 2,
+  id: "2",
   name: "Test SYUDENT",
   password: "test",
   email: "student@example.com",
@@ -58,13 +58,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       //   credentials: "include",
       //   body: JSON.stringify(credentials),
       // });
-      if (credentials.username == "teacher@example.com") {
-        console.log("test");
-        return TEST_TEACHER;
-      }
-      if (credentials.username == "student@example.com") {
-        return TEST_STUDENT;
-      }
+      // if (credentials.username == "teacher@example.com") {
+      //   console.log("test");
+      //   return TEST_TEACHER;
+      // }
+      // if (credentials.username == "student@example.com") {
+      //   return TEST_STUDENT;
+      // }
       // if (!response.ok) {
       throw new Error("Login failed");
       // }

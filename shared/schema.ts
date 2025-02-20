@@ -22,7 +22,7 @@ export enum ExamType {
 }
 
 export const users = pgTable("users", {
-  id: serial("id").primaryKey(),
+  id: text("id").primaryKey(),
   name: text("name").notNull(),
   password: text("password").notNull(),
   email: text("email").notNull().unique(),
@@ -85,7 +85,6 @@ export const teacherSubgroups = pgTable("teacher_subgroups", {
 
 export const insertUserSchema = createInsertSchema(users).pick({
   name: true,
-  username: true,
   password: true,
   email: true,
   phone: true,
