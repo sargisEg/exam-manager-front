@@ -13,6 +13,7 @@ export default function CourseDetails() {
   const course = testData.TEST_COURSES[courseId || ""];
   const courseExams = Object.values(testData.TEST_EXAMS).filter(exam => exam.courseId === course?.id);
 
+  
   const examColumns: ColumnDef<Exam>[] = [
     {
       accessorKey: "title",
@@ -56,7 +57,7 @@ export default function CourseDetails() {
           </CardHeader>
           <CardContent>
             <h2 className="text-lg font-semibold mb-4">Exams</h2>
-            <DataTable columns={examColumns} data={courseExams}/>
+            <DataTable columns={examColumns} data={courseExams} initialSorting={[{ id: "startDate", desc: false }]}/>
           </CardContent>
         </Card>
       </main>

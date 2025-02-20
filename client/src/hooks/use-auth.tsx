@@ -21,7 +21,7 @@ const TEST_STUDENT: User = {
   email: "student@example.com",
   phone: "1234567890",
   role: UserRole.STUDENT,
-  subgroupId: null,
+  subgroupId: "9c8b6d7e-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
 };
 
 type AuthContextType = {

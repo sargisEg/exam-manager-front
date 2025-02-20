@@ -51,6 +51,7 @@ export default function StudentDashboard() {
                 <DataTable
                   columns={courseColumns}
                   data={Object.values(testData.TEST_COURSES)}
+                  initialSorting={[{ id: "name", desc: false }]}
                 />
               </CardContent>
             </Card>
