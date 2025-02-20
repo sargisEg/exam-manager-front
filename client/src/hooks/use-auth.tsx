@@ -1,4 +1,5 @@
 import { createContext, ReactNode, useContext } from "react";
+import { queryClient } from "@/lib/queryClient";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { User } from "@shared/schema";
 import { UserRole } from "@shared/schema";
@@ -52,24 +53,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: { username: string; password: string }) => {
-      // const response = await fetch("/api/login", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   credentials: "include",
-      //   body: JSON.stringify(credentials),
-      // });
-      // if (credentials.username == "teacher@example.com") {
-      //   console.log("test");
-      //   return TEST_TEACHER;
-      // }
-      // if (credentials.username == "student@example.com") {
-      //   return TEST_STUDENT;
-      // }
-      // if (!response.ok) {
       return TEST_STUDENT;
-      // throw new Error("Login failed");
-      // }
-      // return response.json();
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(["user"], data);
     },
   });
 
