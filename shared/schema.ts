@@ -24,9 +24,8 @@ export enum ExamType {
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
-  username: text("username").notNull().unique(),
   password: text("password").notNull(),
-  email: text("email").notNull(),
+  email: text("email").notNull().unique(),
   phone: text("phone").notNull(),
   role: text("role", { enum: ['STUDENT', 'TEACHER', 'ADMIN'] }).notNull(),
   subgroupId: text("subgroup_id").references(() => subgroups.id),

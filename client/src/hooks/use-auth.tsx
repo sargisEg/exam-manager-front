@@ -1,7 +1,27 @@
-
 import { createContext, ReactNode, useContext } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { User } from "@shared/schema";
+import { UserRole } from "@shared/schema";
+
+const TEST_TEACHER: User = {
+  id: 1,
+  name: "Test Teacher",
+  password: "test",
+  email: "teacher@example.com",
+  phone: "1234567890",
+  role: UserRole.TEACHER,
+  subgroupId: null,
+};
+
+const TEST_STUDENT: User = {
+  id: 2,
+  name: "Test SYUDENT",
+  password: "test",
+  email: "student@example.com",
+  phone: "1234567890",
+  role: UserRole.STUDENT,
+  subgroupId: null,
+};
 
 type AuthContextType = {
   user: User | null;
@@ -15,7 +35,11 @@ type AuthContextType = {
 export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const { data: user, isLoading, error } = useQuery({
+  const {
+    data: user,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["user"],
     queryFn: async () => {
       const response = await fetch("/api/user", {
@@ -28,16 +52,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: { username: string; password: string }) => {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(credentials),
-      });
-      if (!response.ok) {
-        throw new Error("Login failed");
+      // const response = await fetch("/api/login", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   credentials: "include",
+      //   body: JSON.stringify(credentials),
+      // });
+      if (credentials.username == "teacher@example.com") {
+        console.log("test");
+        return TEST_TEACHER;
       }
-      return response.json();
+      if (credentials.username == "student@example.com") {
+        return TEST_STUDENT;
+      }
+      // if (!response.ok) {
+      throw new Error("Login failed");
+      // }
+      // return response.json();
     },
   });
 
