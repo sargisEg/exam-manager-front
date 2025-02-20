@@ -1,56 +1,58 @@
-import { createContext, ReactNode, useContext } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { User, UserRole } from "@shared/schema";
 
-// // Hardcoded test user
-// const TEST_USER: User = {
-//   id: 1,
-//   name: "Test Useraaa",
-//   username: "test",
-//   password: "test",
-//   email: "test@example.com",
-//   phone: "1234567890",
-//   role: UserRole.TEACHER, // Change this to test different roles
-//   subgroupId: null,
-// };
+import { createContext, ReactNode, useContext } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { User } from "@shared/schema";
 
 type AuthContextType = {
   user: User | null;
   isLoading: boolean;
   error: Error | null;
+  loginMutation: any;
+  registerMutation: any;
+  logoutMutation: any;
 };
 
 export const AuthContext = createContext<AuthContextType | null>(null);
 
-// export function AuthProvider({ children }: { children: ReactNode }) {
-//   return (
-//     <AuthContext.Provider
-//       value={{
-//         user: TEST_USER,
-//         isLoading: false,
-//         error: null,
-//       }}
-//     >
-//       {children}
-//     </AuthContext.Provider>
-//   );
-// }
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-
-  const loginMutation = useMutation({
-    mutationFn: async () => {
-      const response = await fetch("/api/logout", {
-        method: "POST",
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const { data: user, isLoading, error } = useQuery({
+    queryKey: ["user"],
+    queryFn: async () => {
+      const response = await fetch("/api/user", {
         credentials: "include",
       });
+      if (!response.ok) return null;
+      return response.json();
+    },
+  });
+
+  const loginMutation = useMutation({
+    mutationFn: async (credentials: { username: string; password: string }) => {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(credentials),
+      });
       if (!response.ok) {
-        throw new Error("Logout failed");
+        throw new Error("Login failed");
       }
+      return response.json();
+    },
+  });
+
+  const registerMutation = useMutation({
+    mutationFn: async (userData: any) => {
+      const response = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(userData),
+      });
+      if (!response.ok) {
+        throw new Error("Registration failed");
+      }
+      return response.json();
     },
   });
 
@@ -66,5 +68,26 @@ export function useAuth() {
     },
   });
 
-  return { ...context, logoutMutation };
+  return (
+    <AuthContext.Provider
+      value={{
+        user: user || null,
+        isLoading,
+        error: error as Error | null,
+        loginMutation,
+        registerMutation,
+        logoutMutation,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
 }
