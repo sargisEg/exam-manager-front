@@ -29,40 +29,41 @@ export const users = pgTable("users", {
   email: text("email").notNull(),
   phone: text("phone").notNull(),
   role: text("role", { enum: ['STUDENT', 'TEACHER', 'ADMIN'] }).notNull(),
-  subgroupId: integer("subgroup_id").references(() => subgroups.id),
+  subgroupId: text("subgroup_id").references(() => subgroups.id),
 });
 
 export const departments = pgTable("departments", {
-  id: serial("id").primaryKey(),
+  id: text("id").primaryKey(),
   name: text("name").notNull(),
   nameShort: text("name_short").notNull(),
-  headOfDepartmentId: integer("head_of_department_id").references(() => users.id),
+  headOfDepartmentId: text("head_of_department_id").notNull(),
 });
 
 export const groups = pgTable("groups", {
-  id: serial("id").primaryKey(),
+  id: text("id").primaryKey(),
   name: text("name").notNull(),
   startYear: integer("start_year").notNull(),
   endYear: integer("end_year").notNull(),
+  departmentId: text("department_id").references(() => departments.id),
 });
 
 export const subgroups = pgTable("subgroups", {
-  id: serial("id").primaryKey(),
+  id: text("id").primaryKey(),
   name: text("name").notNull(),
-  groupId: integer("group_id").references(() => groups.id).notNull(),
+  groupId: text("group_id").references(() => groups.id).notNull(),
 });
 
 export const courses = pgTable("courses", {
-  id: serial("id").primaryKey(),
+  id: text("id").primaryKey(),
   name: text("name").notNull(),
-  groupId: integer("group_id").references(() => groups.id).notNull(),
+  groupId: text("group_id").references(() => groups.id).notNull(),
 });
 
 export const exams = pgTable("exams", {
-  id: serial("id").primaryKey(),
+  id: text("id").primaryKey(),
   title: text("title").notNull(),
-  courseId: integer("course_id").references(() => courses.id).notNull(),
-  subgroupId: integer("subgroup_id").references(() => subgroups.id).notNull(),
+  courseId: text("course_id").references(() => courses.id).notNull(),
+  subgroupId: text("subgroup_id").references(() => subgroups.id).notNull(),
   location: text("location").notNull(),
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
@@ -72,15 +73,15 @@ export const exams = pgTable("exams", {
 });
 
 export const examResults = pgTable("exam_results", {
-  id: serial("id").primaryKey(),
-  studentId: integer("student_id").references(() => users.id).notNull(),
-  examId: integer("exam_id").references(() => exams.id).notNull(),
+  id: text("id").primaryKey(),
+  studentId: text("student_id").references(() => users.id).notNull(),
+  examId: text("exam_id").references(() => exams.id).notNull(),
   points: integer("points").notNull(),
 });
 
 export const teacherSubgroups = pgTable("teacher_subgroups", {
-  teacherId: integer("teacher_id").references(() => users.id).notNull(),
-  subgroupId: integer("subgroup_id").references(() => subgroups.id).notNull(),
+  teacherId: text("teacher_id").references(() => users.id).notNull(),
+  subgroupId: text("subgroup_id").references(() => subgroups.id).notNull(),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({

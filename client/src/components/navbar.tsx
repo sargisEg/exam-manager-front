@@ -32,7 +32,9 @@ export function Navbar() {
         <Link href={getHomeLink()}>
           <a className="text-xl font-bold">Exam Management</a>
         </Link>
-
+        <div className="flex gap-4">
+          {user?.email}
+        </div>
         <nav className="flex items-center gap-6">
           {user && (
             <DropdownMenu>

@@ -10,7 +10,7 @@ export function BackButton() {
     <Button 
       variant="ghost" 
       size="sm" 
-      onClick={() => navigate(-1)}
+      onClick={() => window.history.back()}
       className="mb-4"
     >
       <ChevronLeft className="h-4 w-4 mr-1" />
