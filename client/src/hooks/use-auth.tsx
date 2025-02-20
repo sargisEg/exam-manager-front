@@ -3,6 +3,7 @@ import { queryClient } from "@/lib/queryClient";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { User } from "@shared/schema";
 import { UserRole } from "@shared/schema";
+import session from "express-session";
 
 const TEST_TEACHER: User = {
   id: "1",
@@ -13,6 +14,7 @@ const TEST_TEACHER: User = {
   role: UserRole.TEACHER,
   subgroupId: null,
 };
+
 
 const TEST_STUDENT: User = {
   id: "2",
