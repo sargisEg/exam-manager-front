@@ -30,16 +30,32 @@ export function ExamCalendar({ exams }: ExamCalendarProps) {
             <Calendar
               mode="single"
               modifiers={{
-                hasExam: (date) => {
-                  const formattedDate = format(date, "yyyy-MM-dd");
-                  return !!examDates[formattedDate];
+                upcomingExam: (date) => {
+                  if (date > new Date()) {
+                    console.log("date " + date);
+                    console.log(new Date());
+                    const formattedDate = format(date, "yyyy-MM-dd");
+                    return !!examDates[formattedDate];
+                  }
+                  return false;
                 },
+                pastExam: (date) => {
+                  if (date < new Date()) {
+                    const formattedDate = format(date, "yyyy-MM-dd");
+                    return !!examDates[formattedDate];
+                  }
+                  return false;
+                }
               }}
               modifiersStyles={{
-                hasExam: {
+                upcomingExam: {
                   backgroundColor: "hsl(var(--primary))",
                   color: "white",
                 },
+                pastExam: {
+                  backgroundColor: "grey",
+                  color: "white",
+                }
               }}
             />
           </div>

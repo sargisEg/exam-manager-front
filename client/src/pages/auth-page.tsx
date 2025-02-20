@@ -25,18 +25,10 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { addToLocalStorage } from "@/hooks/use-local-storage";
 
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
   const [, setLocation] = useLocation();
-
-  useEffect(() => {
-    if (user) {
-      addToLocalStorage("userId", user.id);
-      addToLocalStorage("subgroupId", user.subgroupId);
-    }
-  }, [user]);
 
   useEffect(() => {
     if (user) {

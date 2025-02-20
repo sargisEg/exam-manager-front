@@ -3,7 +3,6 @@ import { queryClient } from "@/lib/queryClient";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { User } from "@shared/schema";
 import { UserRole } from "@shared/schema";
-import { addToLocalStorage } from '@/hooks/use-local-storage';
 
 const TEST_TEACHER: User = {
   id: "1",
@@ -23,7 +22,7 @@ const TEST_STUDENT: User = {
   email: "student@example.com",
   phone: "1234567890",
   role: UserRole.STUDENT,
-  subgroupId: "9c8b6d7e-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
+  subgroupId: "9c8b6d7e-8f5f-4b3a-a5e9-b9f1a3c1a0a1", //CS Subgroup 1A
 };
 
 type AuthContextType = {
@@ -71,6 +70,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response === null) {
         throw new Error("Login failed");
       }
+      localStorage.setItem('userId', response.id);
+      localStorage.setItem('subgroupId', response.subgroupId ? response.subgroupId : '');
       // return response.json();
       return response;
     },
