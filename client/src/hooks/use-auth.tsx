@@ -66,7 +66,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       //   return TEST_STUDENT;
       // }
       // if (!response.ok) {
-      throw new Error("Login failed");
+      return TEST_STUDENT;
+      // throw new Error("Login failed");
       // }
       // return response.json();
     },

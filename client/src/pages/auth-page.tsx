@@ -112,6 +112,11 @@ export default function AuthPage() {
                     <Label htmlFor="password">Password</Label>
                     <Input id="password" type="password" {...loginForm.register("password")} />
                   </div>
+                  {loginMutation.error && (
+                    <div className="text-sm text-red-500">
+                      {loginMutation.error.message}
+                    </div>
+                  )}
                   <Button type="submit" className="w-full" disabled={loginMutation.isPending}>
                     {loginMutation.isPending ? "Logging in..." : "Login"}
                   </Button>
