@@ -20,6 +20,7 @@ import { useLocation } from "wouter";
 import { Users, BookOpen, ChevronRight } from "lucide-react";
 import useModal from "@/hooks/use-modal";
 import Modal from "@/components/ui/modal";
+import { ExamForm } from "@/components/exam-form";
 
 export default function TeacherDashboard() {
   const { toast } = useToast();
@@ -133,11 +134,10 @@ export default function TeacherDashboard() {
     },
   ];
 
-  const handleCreateExam = async () => {
-
-
-    <Modal isOpen={isOpen} toggle={toggle}></Modal>
-    
+  const handleCreateExam = async (data: any) => {
+    // Here you would typically make an API call to create the exam
+    console.log(data);
+    toggle();
     toast({
       title: "Success",
       description: "Exam created successfully",
@@ -152,6 +152,9 @@ export default function TeacherDashboard() {
           <h1 className="text-3xl font-bold">Teacher Dashboard</h1>
           <Button onClick={toggle}>Create Exam</Button>
         </div>
+        <Modal isOpen={isOpen} toggle={toggle} title="Create New Exam">
+          <ExamForm onSubmit={handleCreateExam} />
+        </Modal>
 
         <div className="grid gap-4 md:grid-cols-2 mb-8">
           {stats.map((stat) => (
