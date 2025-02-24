@@ -174,6 +174,20 @@ export default function TeacherDashboard() {
 
         <div className="grid gap-6">
           <ExamCalendar exams={Object.values(testData.TEST_EXAMS)} />
+          {Object.values(testData.TEST_EXAMS).some(exam => 
+            exam.status === ExamStatus.FINISHED && !exam.isGraded
+          ) && (
+            <Card className="cursor-pointer hover:bg-accent" onClick={() => navigate('/ungraded-exams')}>
+              <CardHeader>
+                <CardTitle>Not Graded Exams</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-sm text-muted-foreground">
+                  Click to view and grade finished exams
+                </div>
+              </CardContent>
+            </Card>
+          )}
           <Card>
             <CardHeader>
               <CardTitle>My Groups</CardTitle>
