@@ -11,7 +11,7 @@ import * as testData from "@shared/test-data";
 import { format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
 import { Exam, ExamStatus } from "@shared/schema";
-import { BackButton } from "@/components/back-button";
+import { BackButton } from "@/components/ui/back-button";
 
 export default function UngradedExams() {
   const { toast } = useToast();

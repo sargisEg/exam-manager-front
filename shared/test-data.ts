@@ -1,7 +1,7 @@
 import {
   Exam,
-  ExamStatus,
-  ExamType,
+  UserRole,
+  User,
   ExamResult,
   Course,
   Group,
@@ -30,7 +30,7 @@ export const TEST_EXAMS: Record<string, Exam> = {
     location: "Room 101",
     startDate: new Date("2025-02-10T09:00:00.000Z"),
     endDate: new Date("2025-02-10T11:00:00.000Z"),
-    isGraded: false,
+    isGraded: true,
     maxPoints: 100,
     status: "FINISHED",
     type: "MIDTERM",
@@ -43,7 +43,7 @@ export const TEST_EXAMS: Record<string, Exam> = {
     location: "Room 101",
     startDate: new Date("2025-01-10T09:00:00.000Z"),
     endDate: new Date("2025-01-10T11:00:00.000Z"),
-    isGraded: false,
+    isGraded: true,
     maxPoints: 100,
     status: "FINISHED",
     type: "GENERAL",
@@ -445,4 +445,15 @@ export const TEST_EXAM_RESULTS: Record<string, ExamResult> = {
     examId: "2f5ef059-84c5-47d3-a3ba-07c2cf710e0f",
     point: 90,
   },
+}
+export const TEST_STUDENTS: Record<string, User> = {
+  "2": {
+    id: "2",
+    name: "Test SYUDENT",
+    password: "test",
+    email: "student@example.com",
+    phone: "1234567890",
+    role: UserRole.STUDENT,
+    subgroupId: "9c8b6d7e-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
+  }
 }

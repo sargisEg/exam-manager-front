@@ -16,6 +16,7 @@ import StudentDetails from "@/pages/student-details";
 import TeacherDetails from "@/pages/teacher-details";
 import { ProtectedRoute } from "./lib/protected-route";
 import { UserRole } from "@shared/schema";
+import UngradedExams from "./pages/ungraded-exams";
 
 function Router() {
   return (
@@ -65,6 +66,11 @@ function Router() {
         path="/teacher/:teacherId" 
         component={TeacherDetails}
         allowedRoles={[UserRole.ADMIN]} 
+      />
+      <ProtectedRoute 
+        path="/ungraded-exams" 
+        component={UngradedExams}
+        allowedRoles={[UserRole.TEACHER]} 
       />
       <Route component={NotFound} />
     </Switch>
