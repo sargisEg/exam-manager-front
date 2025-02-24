@@ -5,16 +5,26 @@ import { Navbar } from "@/components/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import * as testData from "@shared/test-data";
-import { Exam, Course, Subgroup, Group, ExamStatus, ExamType } from "@shared/schema";
+import {
+  Exam,
+  Course,
+  Subgroup,
+  Group,
+  ExamStatus,
+  ExamType,
+} from "@shared/schema";
 import { format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { Users, BookOpen, ChevronRight } from "lucide-react";
+import useModal from "@/hooks/use-modal";
+import Modal from "@/components/ui/modal";
 
 export default function TeacherDashboard() {
   const { toast } = useToast();
   const [, navigate] = useLocation();
+  const { isOpen, toggle } = useModal();
 
   const groupColumns: ColumnDef<Group>[] = [
     {
@@ -28,7 +38,9 @@ export default function TeacherDashboard() {
     {
       id: "actions",
       cell: ({ row }) => {
-        const subgroups = Object.values(testData.TEST_SUBGROUPS).filter(sg => sg.groupId === row.original.id);
+        const subgroups = Object.values(testData.TEST_SUBGROUPS).filter(
+          (sg) => sg.groupId === row.original.id,
+        );
         return (
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground text-sm">
@@ -47,7 +59,9 @@ export default function TeacherDashboard() {
     },
   ];
 
-  const courseColumns: ColumnDef<Course & { group?: Group; subgroup?: Subgroup }>[] = [
+  const courseColumns: ColumnDef<
+    Course & { group?: Group; subgroup?: Subgroup }
+  >[] = [
     {
       accessorKey: "name",
       header: "Course Name",
@@ -56,7 +70,9 @@ export default function TeacherDashboard() {
       id: "group",
       header: "Group",
       cell: ({ row }) => {
-        const group = Object.values(testData.TEST_GROUPS).find(g => g.id === row.original.groupId);
+        const group = Object.values(testData.TEST_GROUPS).find(
+          (g) => g.id === row.original.groupId,
+        );
         return group?.name || "-";
       },
     },
@@ -64,8 +80,10 @@ export default function TeacherDashboard() {
       id: "subgroups",
       header: "Subgroups",
       cell: ({ row }) => {
-        const subgroups = Object.values(testData.TEST_SUBGROUPS).filter(sg => sg.groupId === row.original.groupId);
-        return subgroups.map(sg => sg.name).join(", ") || "-";
+        const subgroups = Object.values(testData.TEST_SUBGROUPS).filter(
+          (sg) => sg.groupId === row.original.groupId,
+        );
+        return subgroups.map((sg) => sg.name).join(", ") || "-";
       },
     },
     {
@@ -115,7 +133,11 @@ export default function TeacherDashboard() {
     },
   ];
 
-  const handleCreateExam = async (data: Partial<Exam>) => {
+  const handleCreateExam = async () => {
+
+
+    <Modal isOpen={isOpen} toggle={toggle}></Modal>
+    
     toast({
       title: "Success",
       description: "Exam created successfully",
@@ -128,9 +150,7 @@ export default function TeacherDashboard() {
       <main className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Teacher Dashboard</h1>
-          <Button onClick={() => toast({ title: "Coming soon", description: "Exam creation will be available soon" })}>
-            Create Exam
-          </Button>
+          <Button onClick={toggle}>Create Exam</Button>
         </div>
 
         <div className="grid gap-4 md:grid-cols-2 mb-8">
@@ -156,8 +176,11 @@ export default function TeacherDashboard() {
               <CardTitle>My Groups</CardTitle>
             </CardHeader>
             <CardContent>
-              <DataTable columns={groupColumns} data={Object.values(testData.TEST_GROUPS)} 
-                initialSorting={[{ id: "name", desc: false }]}/>
+              <DataTable
+                columns={groupColumns}
+                data={Object.values(testData.TEST_GROUPS)}
+                initialSorting={[{ id: "name", desc: false }]}
+              />
             </CardContent>
           </Card>
 
@@ -166,12 +189,14 @@ export default function TeacherDashboard() {
               <CardTitle>My Courses</CardTitle>
             </CardHeader>
             <CardContent>
-              <DataTable 
-                columns={courseColumns} 
-                data={Object.values(testData.TEST_COURSES).map(course => ({
+              <DataTable
+                columns={courseColumns}
+                data={Object.values(testData.TEST_COURSES).map((course) => ({
                   ...course,
-                  group: Object.values(testData.TEST_GROUPS).find(g => g.id === course.groupId),
-                }))} 
+                  group: Object.values(testData.TEST_GROUPS).find(
+                    (g) => g.id === course.groupId,
+                  ),
+                }))}
                 initialSorting={[{ id: "name", desc: false }]}
               />
             </CardContent>
