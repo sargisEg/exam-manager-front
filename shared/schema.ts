@@ -55,6 +55,7 @@ export const subgroups = pgTable("subgroups", {
 export const courses = pgTable("courses", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
+  teacherId: text("teacher_id").references(() => users.id),
   groupId: text("group_id").references(() => groups.id).notNull(),
 });
 
