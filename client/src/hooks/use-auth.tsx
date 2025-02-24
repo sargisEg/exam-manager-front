@@ -61,7 +61,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       //   body: JSON.stringify(credentials),
       // });
       let response: User | null = null;
-      if (credentials.username == "teacher@example.com") {
+      if (credentials.username == "teacher") {
         response = TEST_TEACHER;
       }
       if (credentials.username == "student") {

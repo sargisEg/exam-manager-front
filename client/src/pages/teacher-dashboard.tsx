@@ -150,14 +150,14 @@ export default function TeacherDashboard() {
         </div>
 
         <div className="grid gap-6">
-          <ExamCalendar exams={testData.TEST_EXAMS} />
-
+          <ExamCalendar exams={Object.values(testData.TEST_EXAMS)} />
           <Card>
             <CardHeader>
               <CardTitle>My Groups</CardTitle>
             </CardHeader>
             <CardContent>
-              <DataTable columns={groupColumns} data={Object.values(testData.TEST_GROUPS)} />
+              <DataTable columns={groupColumns} data={Object.values(testData.TEST_GROUPS)} 
+                initialSorting={[{ id: "name", desc: false }]}/>
             </CardContent>
           </Card>
 
@@ -172,6 +172,7 @@ export default function TeacherDashboard() {
                   ...course,
                   group: Object.values(testData.TEST_GROUPS).find(g => g.id === course.groupId),
                 }))} 
+                initialSorting={[{ id: "name", desc: false }]}
               />
             </CardContent>
           </Card>

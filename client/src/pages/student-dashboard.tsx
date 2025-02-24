@@ -15,7 +15,9 @@ export default function StudentDashboard() {
 
   const userId = localStorage.getItem("userId");
   const subgroupId = localStorage.getItem("subgroupId");
-
+  const groupId = (subgroupId !== null) ? testData.TEST_SUBGROUPS[subgroupId].groupId : "";
+  console.log(groupId);
+  
   const courseColumns: ColumnDef<Course>[] = [
     {
       accessorKey: "name",
@@ -28,7 +30,7 @@ export default function StudentDashboard() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate(`/course/${row.original.id}`)}
+            onClick={() => navigate(`/course-student/${row.original.id}`)}
           >
             View Course <ChevronRight className="ml-2 h-4 w-4" />
           </Button>
@@ -56,7 +58,9 @@ export default function StudentDashboard() {
               <CardContent>
                 <DataTable
                   columns={courseColumns}
-                  data={Object.values(testData.TEST_COURSES)}
+                  data={Object.values(testData.TEST_COURSES).filter(
+                    (course) => course.groupId === groupId,
+                  )}
                   initialSorting={[{ id: "name", desc: false }]}
                 />
               </CardContent>

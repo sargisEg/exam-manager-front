@@ -8,7 +8,8 @@ import AuthPage from "@/pages/auth-page";
 import StudentDashboard from "@/pages/student-dashboard";
 import TeacherDashboard from "@/pages/teacher-dashboard";
 import AdminDashboard from "@/pages/admin-dashboard";
-import CourseDetails from "@/pages/course-details";
+import StudentCourseDetails from "@/pages/student-course-details";
+import TeacherCourseDetails from "@/pages/teacher-course-details";
 import DepartmentDetails from "@/pages/department-details";
 import GroupDetails from "@/pages/group-details";
 import StudentDetails from "@/pages/student-details";
@@ -36,9 +37,14 @@ function Router() {
         allowedRoles={[UserRole.ADMIN]} 
       />
       <ProtectedRoute 
-        path="/course/:courseId" 
-        component={CourseDetails}
-        allowedRoles={[UserRole.STUDENT, UserRole.TEACHER]} 
+        path="/course-student/:courseId" 
+        component={StudentCourseDetails}
+        allowedRoles={[UserRole.STUDENT]} 
+      />
+      <ProtectedRoute 
+        path="/course-teacher/:courseId" 
+        component={TeacherCourseDetails}
+        allowedRoles={[UserRole.TEACHER]} 
       />
       <ProtectedRoute 
         path="/department/:departmentId" 

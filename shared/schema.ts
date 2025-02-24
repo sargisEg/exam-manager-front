@@ -75,7 +75,7 @@ export const examResults = pgTable("exam_results", {
   id: text("id").primaryKey(),
   studentId: text("student_id").references(() => users.id).notNull(),
   examId: text("exam_id").references(() => exams.id).notNull(),
-  points: integer("points").notNull(),
+  point: integer("point").notNull(),
 });
 
 export const teacherSubgroups = pgTable("teacher_subgroups", {

@@ -1,6 +1,7 @@
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { BadgeGray } from "@/components/ui/badge-gray";
 import { Exam } from "@shared/schema";
 import { format } from "date-fns";
 import { useLocation } from "wouter";
@@ -19,6 +20,7 @@ export function ExamCalendar({ exams }: ExamCalendarProps) {
     return acc;
   }, {} as Record<string, Exam[]>);
   const [, navigate] = useLocation();
+  const now = new Date();
   return (
     <Card>
       <CardHeader>
@@ -31,16 +33,14 @@ export function ExamCalendar({ exams }: ExamCalendarProps) {
               mode="single"
               modifiers={{
                 upcomingExam: (date) => {
-                  if (date > new Date()) {
-                    console.log("date " + date);
-                    console.log(new Date());
+                  if (date > now) {
                     const formattedDate = format(date, "yyyy-MM-dd");
                     return !!examDates[formattedDate];
                   }
                   return false;
                 },
                 pastExam: (date) => {
-                  if (date < new Date()) {
+                  if (date < now) {
                     const formattedDate = format(date, "yyyy-MM-dd");
                     return !!examDates[formattedDate];
                   }
@@ -61,7 +61,9 @@ export function ExamCalendar({ exams }: ExamCalendarProps) {
           </div>
           <div className="container mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4">
-              {Object.entries(examDates).map(([date, exams]) => (
+              {Object.entries(examDates).filter(([date, exams]) => {
+                  return date >= format(now, "yyyy-MM-dd");
+                }).map(([date, exams]) => (
                 <div key={date} className="flex items-center gap-4 mb-1">
                   <Badge className="w-20 h-7">{format(new Date(date), "MMM d")}</Badge>
                   <div className="text-sm">
