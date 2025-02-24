@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, timestamp, foreignKey } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, timestamp, foreignKey, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -67,7 +67,7 @@ export const exams = pgTable("exams", {
   startDate: timestamp("start_date").notNull(),
   endDate: timestamp("end_date").notNull(),
   maxPoints: integer("max_points").notNull(),
-  isGraded: pgTable.boolean("is_graded").notNull(),
+  isGraded: boolean("is_graded").notNull(),
   status: text("status", { enum: ['UPCOMING', 'IN_PROGRESS', 'FINISHED', 'CANCELED'] }).notNull(),
   type: text("type", { enum: ['MIDTERM', 'GENERAL', 'REPEAT'] }).notNull(),
 });
