@@ -10,12 +10,31 @@ import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { Users, BookOpen, Building2, ChevronRight } from "lucide-react";
 import * as testData from "@shared/test-data";
+import { useState } from 'react';
+
+// Placeholder components - Replace with actual form components
+const CreateUserForm = () => <div>Create User Form Placeholder</div>;
+const CreateDepartmentForm = () => <div>Create Department Form Placeholder</div>;
+const CreateGroupForm = () => <div>Create Group Form Placeholder</div>;
+const CreateSubgroupForm = () => <div>Create Subgroup Form Placeholder</div>;
+const CreateCourseForm = () => <div>Create Course Form Placeholder</div>;
+const Modal = ({ isOpen, toggle, title, children }) => (
+  <div style={{ display: isOpen ? 'block' : 'none' }}>
+    <div>
+      <h2>{title}</h2>
+      {children}
+      <button onClick={toggle}>Close</button>
+    </div>
+  </div>
+);
+
 
 // Test data
 
 export default function AdminDashboard() {
   const { toast } = useToast();
   const [, navigate] = useLocation();
+  const [modalContent, setModalContent] = useState(null);
 
   const teacherColumns: ColumnDef<User>[] = [
     {
@@ -141,23 +160,71 @@ export default function AdminDashboard() {
       <main className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
+          <div className="flex gap-2">
+            <Button onClick={() => setModalContent("user")}>Create User</Button>
+            <Button onClick={() => setModalContent("department")}>Create Department</Button>
+            <Button onClick={() => setModalContent("group")}>Create Group</Button>
+            <Button onClick={() => setModalContent("subgroup")}>Create Subgroup</Button>
+            <Button onClick={() => setModalContent("course")}>Create Course</Button>
+          </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-4 mb-8">
-          {stats.map((stat) => (
-            <Card key={stat.title}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {stat.title}
-                </CardTitle>
-                <stat.icon className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <Modal
+          isOpen={!!modalContent}
+          toggle={() => setModalContent(null)}
+          title={`Create ${modalContent ? modalContent.charAt(0).toUpperCase() + modalContent.slice(1) : ""}`}
+        >
+          {modalContent === "user" && (
+            <CreateUserForm onSubmit={(data) => {
+              console.log(data);
+              toast({
+                title: "Success",
+                description: "User created successfully",
+              });
+              setModalContent(null);
+            }} />
+          )}
+          {modalContent === "department" && (
+            <CreateDepartmentForm onSubmit={(data) => {
+              console.log(data);
+              toast({
+                title: "Success",
+                description: "Department created successfully",
+              });
+              setModalContent(null);
+            }} />
+          )}
+          {modalContent === "group" && (
+            <CreateGroupForm onSubmit={(data) => {
+              console.log(data);
+              toast({
+                title: "Success",
+                description: "Group created successfully",
+              });
+              setModalContent(null);
+            }} />
+          )}
+          {modalContent === "subgroup" && (
+            <CreateSubgroupForm onSubmit={(data) => {
+              console.log(data);
+              toast({
+                title: "Success",
+                description: "Subgroup created successfully",
+              });
+              setModalContent(null);
+            }} />
+          )}
+          {modalContent === "course" && (
+            <CreateCourseForm onSubmit={(data) => {
+              console.log(data);
+              toast({
+                title: "Success",
+                description: "Course created successfully",
+              });
+              setModalContent(null);
+            }} />
+          )}
+        </Modal>
 
         <div className="space-y-6">
           <Card>
