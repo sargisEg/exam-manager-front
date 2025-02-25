@@ -15,41 +15,47 @@ export default function CourseDetails() {
   const exams = Object.values(testData.TEST_EXAMS)
     .filter(exam => exam.courseId === course?.id)
     .filter(exam => exam.startDate >= new Date());
-  const examsResults = Object.values(testData.TEST_EXAM_RESULTS)
-    .filter(examResult => examResult.studentId === userId)
-    .filter(examResult => examResult.studentId === userId);
+  const pastExams = Object.values(testData.TEST_EXAMS)
+    .filter(exam => exam.courseId === course?.id)
+    .filter(exam => exam.startDate < new Date());
 
-  const pastExamColumns: ColumnDef<ExamResult>[] =[
+  const pastExamColumns: ColumnDef<Exam>[] =[
     {
       accessorKey: "title",
       header: "Title",
-      cell: ({ row }) => testData.TEST_EXAMS[row.original.examId].title,
+      cell: ({ row }) => row.original.title,
+    },
+    {
+      accessorKey: "subgroupId",
+      header: "Subgroup",
+      cell: ({ row }) => testData.TEST_SUBGROUPS[row.original.subgroupId].name,
     },
     {
       accessorKey: "type",
       header: "Type",
-      cell: ({ row }) => testData.TEST_EXAMS[row.original.examId].type,
+      cell: ({ row }) => row.original.type,
     },
     {
       accessorKey: "startDate",
       header: "Date",
-      cell: ({ row }) => format(new Date(testData.TEST_EXAMS[row.original.examId].startDate), "PPP"),
+      cell: ({ row }) => format(new Date(row.original.startDate), "PPP"),
     },
     {
       accessorKey: "maxPoints",
       header: "Max Points",
-      cell: ({ row }) => testData.TEST_EXAMS[row.original.examId].maxPoints,
-    },
-    {
-      accessorKey: "point",
-      header: "My Points",
-    },
+      cell: ({ row }) => row.original.maxPoints,
+    }
   ];
   
   const examColumns: ColumnDef<Exam>[] = [
     {
       accessorKey: "title",
       header: "Title",
+    },
+    {
+      accessorKey: "subgroupId",
+      header: "Subgroup",
+      cell: ({ row }) => testData.TEST_SUBGROUPS[row.original.subgroupId].name,
     },
     {
       accessorKey: "type",
@@ -89,7 +95,7 @@ export default function CourseDetails() {
           </CardContent>
           <CardContent>
             <h2 className="text-lg font-semibold mb-4">Past Exams</h2>
-            <DataTable columns={pastExamColumns} data={examsResults} initialSorting={[{ id: "startDate", desc: false }]}/>
+            <DataTable columns={pastExamColumns} data={pastExams} initialSorting={[{ id: "startDate", desc: false }]}/>
           </CardContent>
         </Card>
       </main>

@@ -8,35 +8,14 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { useLocation } from "wouter";
+import * as testData from "@shared/test-data";
 
 // Test data
-const TEST_DEPARTMENTS: Record<string, Department> = {
-  "1": { id: 1, name: "Computer Science", nameShort: "CS", headOfDepartmentId: 2 },
-  "2": { id: 2, name: "Mechanical Engineering", nameShort: "ME", headOfDepartmentId: 2 },
-};
-
-const TEST_GROUPS: Group[] = [
-  { id: 1, name: "CS-2025", startYear: 2025, endYear: 2029 },
-  { id: 2, name: "ME-2025", startYear: 2025, endYear: 2029 },
-];
-
-const TEST_USERS: User[] = [
-  {
-    id: 2,
-    name: "Jane Smith",
-    username: "jane",
-    password: "test",
-    email: "jane@example.com",
-    phone: "1234567891",
-    role: UserRole.TEACHER,
-    subgroupId: null,
-  },
-];
 
 export default function DepartmentDetails() {
   const { departmentId } = useParams();
   const [, navigate] = useLocation();
-  const department = TEST_DEPARTMENTS[departmentId || ""];
+  const department = testData.TEST_DEPARTMENTS[departmentId || ""];
 
   const groupColumns: ColumnDef<Group>[] = [
     {
@@ -110,7 +89,8 @@ export default function DepartmentDetails() {
             <CardContent>
               <DataTable 
                 columns={groupColumns} 
-                data={TEST_GROUPS.filter(g => true)} // In real app, filter by department
+                data={Object.values(testData.TEST_GROUPS).filter(g => g.departmentId == departmentId)}
+                initialSorting={[{ id: "name", desc: false }]}
               />
             </CardContent>
           </Card>
@@ -122,7 +102,8 @@ export default function DepartmentDetails() {
             <CardContent>
               <DataTable 
                 columns={teacherColumns} 
-                data={TEST_USERS.filter(u => u.role === UserRole.TEACHER)} 
+                data={Object.values(testData.TEST_USERS).filter(u => u.role === UserRole.TEACHER)} 
+                initialSorting={[{ id: "name", desc: false }]}
               />
             </CardContent>
           </Card>

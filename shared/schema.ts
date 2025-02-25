@@ -35,7 +35,7 @@ export const departments = pgTable("departments", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
   nameShort: text("name_short").notNull(),
-  headOfDepartmentId: text("head_of_department_id").notNull(),
+  headOfDepartment: text("head_of_department").notNull(),
 });
 
 export const groups = pgTable("groups", {

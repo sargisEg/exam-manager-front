@@ -17,6 +17,7 @@ import TeacherDetails from "@/pages/teacher-details";
 import { ProtectedRoute } from "./lib/protected-route";
 import { UserRole } from "@shared/schema";
 import UngradedExams from "./pages/ungraded-exams";
+import SubgroupDetails from "@/pages/subgroup-details";
 
 function Router() {
   return (
@@ -55,6 +56,11 @@ function Router() {
       <ProtectedRoute 
         path="/group/:groupId" 
         component={GroupDetails}
+        allowedRoles={[UserRole.ADMIN, UserRole.TEACHER]} 
+      />
+      <ProtectedRoute 
+        path="/group/:groupId/subgroup/:subgroupId"
+        component={SubgroupDetails}
         allowedRoles={[UserRole.ADMIN, UserRole.TEACHER]} 
       />
       <ProtectedRoute 

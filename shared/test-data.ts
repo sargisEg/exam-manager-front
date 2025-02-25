@@ -6,6 +6,7 @@ import {
   Course,
   Group,
   Subgroup,
+  Department
 } from "@shared/schema";
 
 export const TEST_EXAMS: Record<string, Exam> = {
@@ -305,14 +306,14 @@ export const TEST_GROUPS: Record<string, Group> = {
     name: "Math Group 1",
     startYear: 2022,
     endYear: 2026,
-    departmentId: "a2c9b8d7-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
+    departmentId: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
   },
   "c5d6e7f8-8f5f-4b3a-a5e9-b9f1a3c1a0a1": {
     id: "c5d6e7f8-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
     name: "Bio Group 1",
     startYear: 2023,
     endYear: 2027,
-    departmentId: "afdae10a-0a60-4b3a-a5e9-b9f1a3c1a0a1",
+    departmentId: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
   },
   "d2e3f40a-8f5f-4b3a-a5e9-b9f1a3c1a0a1": {
     id: "d2e3f40a-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
@@ -326,7 +327,7 @@ export const TEST_GROUPS: Record<string, Group> = {
     name: "Hist Group 1",
     startYear: 2022,
     endYear: 2026,
-    departmentId: "c8d5e6f7-0a60-4b3a-a5e9-b9f1a3c1a0a1",
+    departmentId: "bca1f2b3-0a60-4b3a-a5e9-b9f1a3c1a0a1",
   },
 };
 export const TEST_SUBGROUPS: Record<string, Subgroup> = {
@@ -447,6 +448,40 @@ export const TEST_EXAM_RESULTS: Record<string, ExamResult> = {
   },
 }
 export const TEST_STUDENTS: Record<string, User> = {
+  "2": {
+    id: "2",
+    name: "Test SYUDENT",
+    password: "test",
+    email: "student@example.com",
+    phone: "1234567890",
+    role: UserRole.STUDENT,
+    subgroupId: "9c8b6d7e-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
+  }
+}
+export const TEST_DEPARTMENTS: Record<string, Department> = {
+  "bca1f2b3-0a60-4b3a-a5e9-b9f1a3c1a0a1": {
+    id: "bca1f2b3-0a60-4b3a-a5e9-b9f1a3c1a0a1",
+    name: "Department 1",
+    nameShort: "D1",
+    headOfDepartment: "1"
+  },
+  "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1": {
+    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
+      name: "Department 2",
+      nameShort: "D2",
+      headOfDepartment: "1"
+  }
+}
+export const TEST_USERS: Record<string, User> = {
+  "1": {
+    id: "1",
+    name: "Test Teacher",
+    password: "test",
+    email: "teacher@example.com",
+    phone: "1234567890",
+    role: UserRole.TEACHER,
+    subgroupId: null,
+  },
   "2": {
     id: "2",
     name: "Test SYUDENT",

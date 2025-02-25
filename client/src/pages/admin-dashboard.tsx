@@ -9,52 +9,9 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { Users, BookOpen, Building2, ChevronRight } from "lucide-react";
+import * as testData from "@shared/test-data";
 
 // Test data
-const TEST_GROUPS: Group[] = [
-  { id: 1, name: "CS-2025", startYear: 2025, endYear: 2029 },
-  { id: 2, name: "ME-2025", startYear: 2025, endYear: 2029 },
-];
-
-const TEST_SUBGROUPS: Subgroup[] = [
-  { id: 1, name: "CS-2025-A", groupId: 1 },
-  { id: 2, name: "CS-2025-B", groupId: 1 },
-  { id: 3, name: "ME-2025-A", groupId: 2 },
-];
-
-const TEST_COURSES: Course[] = [
-  { id: 1, name: "Introduction to Programming", groupId: 1 },
-  { id: 2, name: "Data Structures", groupId: 1 },
-  { id: 3, name: "Mechanics", groupId: 2 },
-];
-
-const TEST_USERS: User[] = [
-  {
-    id: 1,
-    name: "John Doe",
-    username: "john",
-    password: "test",
-    email: "john@example.com",
-    phone: "1234567890",
-    role: UserRole.STUDENT,
-    subgroupId: 1,
-  },
-  {
-    id: 2,
-    name: "Jane Smith",
-    username: "jane",
-    password: "test",
-    email: "jane@example.com",
-    phone: "1234567891",
-    role: UserRole.TEACHER,
-    subgroupId: null,
-  },
-];
-
-const TEST_DEPARTMENTS: Department[] = [
-  { id: 1, name: "Computer Science", nameShort: "CS", headOfDepartmentId: 2 },
-  { id: 2, name: "Mechanical Engineering", nameShort: "ME", headOfDepartmentId: 2 },
-];
 
 export default function AdminDashboard() {
   const { toast } = useToast();
@@ -96,8 +53,8 @@ export default function AdminDashboard() {
       id: "group",
       header: "Group",
       cell: ({ row }) => {
-        const subgroup = TEST_SUBGROUPS.find(sg => sg.id === row.original.subgroupId);
-        const group = subgroup ? TEST_GROUPS.find(g => g.id === subgroup.groupId) : null;
+        const subgroup = Object.values(testData.TEST_SUBGROUPS).find(sg => sg.id === row.original.subgroupId);
+        const group = subgroup ? Object.values(testData.TEST_GROUPS).find(g => g.id === subgroup.groupId) : null;
         return group?.name || "-";
       },
     },
@@ -105,7 +62,7 @@ export default function AdminDashboard() {
       id: "subgroup",
       header: "Subgroup",
       cell: ({ row }) => {
-        const subgroup = TEST_SUBGROUPS.find(sg => sg.id === row.original.subgroupId);
+        const subgroup = Object.values(testData.TEST_SUBGROUPS).find(sg => sg.id === row.original.subgroupId);
         return subgroup?.name || "-";
       },
     },
@@ -136,7 +93,7 @@ export default function AdminDashboard() {
       id: "groups",
       header: "Groups",
       cell: ({ row }) => {
-        const groups = TEST_GROUPS.filter(g => true); // In real app, filter by department
+        const groups = Object.values(testData.TEST_GROUPS).filter(g => true); // In real app, filter by department
         return (
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground text-sm">
@@ -158,22 +115,22 @@ export default function AdminDashboard() {
   const stats = [
     {
       title: "Total Users",
-      value: TEST_USERS.length,
+      value: Object.values(testData.TEST_USERS).length,
       icon: Users,
     },
     {
       title: "Teachers",
-      value: TEST_USERS.filter(u => u.role === UserRole.TEACHER).length,
+      value: Object.values(testData.TEST_USERS).filter(u => u.role === UserRole.TEACHER).length,
       icon: Users,
     },
     {
       title: "Students",
-      value: TEST_USERS.filter(u => u.role === UserRole.STUDENT).length,
+      value: Object.values(testData.TEST_USERS).filter(u => u.role === UserRole.STUDENT).length,
       icon: Users,
     },
     {
       title: "Departments",
-      value: TEST_DEPARTMENTS.length,
+      value: Object.values(testData.TEST_DEPARTMENTS).length,
       icon: Building2,
     },
   ];
@@ -208,7 +165,7 @@ export default function AdminDashboard() {
               <CardTitle>Department Structure</CardTitle>
             </CardHeader>
             <CardContent>
-              <DataTable columns={departmentColumns} data={TEST_DEPARTMENTS} />
+              <DataTable columns={departmentColumns} data={Object.values(testData.TEST_DEPARTMENTS)} initialSorting={[{ id: "name", desc: false }]}/>
             </CardContent>
           </Card>
 
@@ -226,7 +183,8 @@ export default function AdminDashboard() {
                 <CardContent>
                   <DataTable 
                     columns={teacherColumns} 
-                    data={TEST_USERS.filter(u => u.role === UserRole.TEACHER)} 
+                    data={Object.values(testData.TEST_USERS).filter(u => u.role === UserRole.TEACHER)} 
+                    initialSorting={[{ id: "name", desc: false }]}
                   />
                 </CardContent>
               </Card>
@@ -240,7 +198,8 @@ export default function AdminDashboard() {
                 <CardContent>
                   <DataTable 
                     columns={studentColumns} 
-                    data={TEST_USERS.filter(u => u.role === UserRole.STUDENT)} 
+                    data={Object.values(testData.TEST_USERS).filter(u => u.role === UserRole.STUDENT)} 
+                    initialSorting={[{ id: "name", desc: false }]}
                   />
                 </CardContent>
               </Card>

@@ -25,6 +25,16 @@ const TEST_STUDENT: User = {
   subgroupId: "9c8b6d7e-8f5f-4b3a-a5e9-b9f1a3c1a0a1", //CS Subgroup 1A
 };
 
+const TEST_ADMIN: User = {
+  id: "3",
+  name: "Test Admin",
+  password: "test",
+  email: "student@example.com",
+  phone: "1234567890",
+  role: UserRole.ADMIN,
+  subgroupId: null, //CS Subgroup 1A
+};
+
 type AuthContextType = {
   user: User | null;
   isLoading: boolean;
@@ -66,6 +76,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
       if (credentials.username == "student") {
         response = TEST_STUDENT;
+      }
+      if (credentials.username == "admin") {
+        response = TEST_ADMIN;
       }
       if (response === null) {
         throw new Error("Login failed");

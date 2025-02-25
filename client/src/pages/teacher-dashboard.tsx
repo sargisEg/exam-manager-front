@@ -93,7 +93,7 @@ export default function TeacherDashboard() {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => navigate(`/course/${row.original.id}`)}
+          onClick={() => navigate(`/course-teacher/${row.original.id}`)}
         >
           View Course <ChevronRight className="ml-2 h-4 w-4" />
         </Button>
