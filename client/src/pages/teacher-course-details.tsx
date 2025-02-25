@@ -7,6 +7,12 @@ import * as testData from "@shared/test-data";
 import { Exam, ExamResult, examResults } from "@shared/schema";
 import { format } from "date-fns";
 import { ColumnDef } from "@tanstack/react-table";
+import {createExamColumns} from "@/lib/exam-columns";
+import useModal from "@/hooks/use-modal";
+import Modal from "@/components/ui/modal";
+import { useToast } from "@/hooks/use-toast";
+import { EditExamForm } from "@/components/edit-exam-form";
+import { useState } from 'react'
 
 export default function CourseDetails() {
   const userId = localStorage.getItem("userId");
@@ -102,7 +108,7 @@ export default function CourseDetails() {
             <CardContent>
               <DataTable
                 columns={examColumns}
-                data={upcomingExams}
+                data={exams}
                 initialSorting={[{ id: "startDate", desc: false }]}
               />
             </CardContent>
@@ -131,28 +137,6 @@ export default function CourseDetails() {
             <EditExamForm exam={editingExam} onSubmit={handleSaveEdit} />
           )}
         </Modal>
-      </main>
-    </div>
-  );
-
-  return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <main className="container mx-auto px-4 py-8">
-        <BackButton />
-        <Card>
-          <CardHeader>
-            <CardTitle>{course.name}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <h2 className="text-lg font-semibold mb-4">Upcoming Exams</h2>
-            <DataTable columns={examColumns} data={exams} initialSorting={[{ id: "startDate", desc: false }]}/>
-          </CardContent>
-          <CardContent>
-            <h2 className="text-lg font-semibold mb-4">Past Exams</h2>
-            <DataTable columns={pastExamColumns} data={pastExams} initialSorting={[{ id: "startDate", desc: false }]}/>
-          </CardContent>
-        </Card>
       </main>
     </div>
   );

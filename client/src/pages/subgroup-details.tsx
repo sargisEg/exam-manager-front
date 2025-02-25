@@ -10,6 +10,12 @@ import { ChevronRight } from "lucide-react";
 import { useLocation } from "wouter";
 import * as testData from "@shared/test-data";
 import { format } from "date-fns";
+import {createExamColumns} from "@/lib/exam-columns";
+import useModal from "@/hooks/use-modal";
+import Modal from "@/components/ui/modal";
+import { useToast } from "@/hooks/use-toast";
+import { EditExamForm } from "@/components/edit-exam-form";
+import { useState } from 'react'
 
 export default function SubgroupDetails() {
   const { groupId } = useParams();
@@ -47,35 +53,37 @@ export default function SubgroupDetails() {
     }
   ];
 
-  const examColumns: ColumnDef<Exam>[] = [
-    {
-      accessorKey: "title",
-      header: "Title",
-    },
-    {
-      accessorKey: "subgroupName",
-      header: "Subgroup",
-      cell: () => subgroup.name,
-    },
-    {
-      accessorKey: "type",
-      header: "Type",
-    },
-    {
-      accessorKey: "startDate",
-      header: "Date",
-      cell: ({ row }) => format(new Date(row.original.startDate), "PPP"),
-    },
-    {
-      accessorKey: "location",
-      header: "Location",
-    },
-    {
-      accessorKey: "maxPoints",
-      header: "Max Points",
-    },
-  ];
+  const [editingExam, setEditingExam] = useState<Exam | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const { toast } = useToast();
 
+  const handleEditExam = (exam: Exam) => {
+    setEditingExam(exam);
+    setIsEditModalOpen(true);
+  };
+
+  const handleRemoveExam = (exam: Exam) => {
+    // Here you would typically make an API call to remove the exam
+    console.log("Removing exam:", exam.id);
+    toast({
+      title: "Success",
+      description: "Exam removed successfully",
+    });
+  };
+
+  const handleSaveEdit = (data: Partial<Exam>) => {
+    // Here you would typically make an API call to update the exam
+    console.log("Saving exam changes:", { examId: editingExam?.id, ...data });
+    setIsEditModalOpen(false);
+    setEditingExam(null);
+    toast({
+      title: "Success",
+      description: "Exam updated successfully",
+    });
+  };
+  
+  const examColumns = createExamColumns(handleEditExam, handleRemoveExam);
+  
   const studentColumns: ColumnDef<User>[] = [
     {
       accessorKey: "name",
@@ -147,6 +155,15 @@ export default function SubgroupDetails() {
             </CardContent>
           </Card>
         </div>
+        <Modal
+          isOpen={isEditModalOpen}
+          toggle={() => setIsEditModalOpen(false)}
+          title="Edit Exam"
+        >
+          {editingExam && (
+            <EditExamForm exam={editingExam} onSubmit={handleSaveEdit} />
+          )}
+        </Modal>
       </main>
     </div>
   );
