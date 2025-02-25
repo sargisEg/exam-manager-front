@@ -47,38 +47,93 @@ export default function CourseDetails() {
     }
   ];
   
-  const examColumns: ColumnDef<Exam>[] = [
-    {
-      accessorKey: "title",
-      header: "Title",
-    },
-    {
-      accessorKey: "subgroupId",
-      header: "Subgroup",
-      cell: ({ row }) => testData.TEST_SUBGROUPS[row.original.subgroupId].name,
-    },
-    {
-      accessorKey: "type",
-      header: "Type",
-    },
-    {
-      accessorKey: "startDate",
-      header: "Date",
-      cell: ({ row }) => format(new Date(row.original.startDate), "PPP"),
-    },
-    {
-      accessorKey: "location",
-      header: "Location",
-    },
-    {
-      accessorKey: "maxPoints",
-      header: "Max Points",
-    },
-  ];
+  const [editingExam, setEditingExam] = useState<Exam | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleEditExam = (exam: Exam) => {
+    setEditingExam(exam);
+    setIsEditModalOpen(true);
+  };
+
+  const handleRemoveExam = (exam: Exam) => {
+    // Here you would typically make an API call to remove the exam
+    console.log("Removing exam:", exam.id);
+    toast({
+      title: "Success",
+      description: "Exam removed successfully",
+    });
+  };
+
+  const handleSaveEdit = (data: Partial<Exam>) => {
+    // Here you would typically make an API call to update the exam
+    console.log("Saving exam changes:", { examId: editingExam?.id, ...data });
+    setIsEditModalOpen(false);
+    setEditingExam(null);
+    toast({
+      title: "Success",
+      description: "Exam updated successfully",
+    });
+  };
+
+  const examColumns = createExamColumns(handleEditExam, handleRemoveExam);
 
   if (!course) {
     return <div>Course not found</div>;
   }
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+      <main className="container mx-auto px-4 py-8">
+        <BackButton />
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold">{course.name}</h1>
+          <p className="text-muted-foreground">
+            Group: {testData.TEST_GROUPS[course.groupId].name}
+          </p>
+        </div>
+
+        <div className="grid gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Upcoming Exams</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DataTable
+                columns={examColumns}
+                data={upcomingExams}
+                initialSorting={[{ id: "startDate", desc: false }]}
+              />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Past Exams</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <DataTable
+                columns={pastExamColumns}
+                data={pastExams}
+                initialSorting={[{ id: "startDate", desc: true }]}
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        <Modal
+          isOpen={isEditModalOpen}
+          toggle={() => setIsEditModalOpen(false)}
+          title="Edit Exam"
+        >
+          {editingExam && (
+            <EditExamForm exam={editingExam} onSubmit={handleSaveEdit} />
+          )}
+        </Modal>
+      </main>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-background">
