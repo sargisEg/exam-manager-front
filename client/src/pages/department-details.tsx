@@ -9,14 +9,18 @@ import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { useLocation } from "wouter";
 import * as testData from "@shared/test-data";
-
-// Test data
+import { useToast } from "@/hooks/use-toast";
+import useModal from "@/hooks/use-modal";
+import { CreateGroupForm } from "@/components/create-group-form";
+import Modal from "@/components/ui/modal";
 
 export default function DepartmentDetails() {
   const { departmentId } = useParams();
   const [, navigate] = useLocation();
   const department = testData.TEST_DEPARTMENTS[departmentId || ""];
-
+  const { isOpen, toggle } = useModal();
+  const { toast } = useToast();
+  
   const groupColumns: ColumnDef<Group>[] = [
     {
       accessorKey: "name",
@@ -36,7 +40,7 @@ export default function DepartmentDetails() {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => navigate(`/group/${row.original.id}`)}
+          onClick={() => navigate(`/department/${departmentId}/admin-group/${row.original.id}`)}
         >
           View Details <ChevronRight className="ml-2 h-4 w-4" />
         </Button>
@@ -44,7 +48,7 @@ export default function DepartmentDetails() {
     },
   ];
 
-  const teacherColumns: ColumnDef<User>[] = [
+  const studentColumns: ColumnDef<User>[] = [
     {
       accessorKey: "name",
       header: "Name",
@@ -54,12 +58,41 @@ export default function DepartmentDetails() {
       header: "Email",
     },
     {
+      accessorKey: "phone",
+      header: "Phone",
+    },
+    {
+      id: "group",
+      header: "Group",
+      cell: ({ row }) => {
+        const subgroup = Object.values(testData.TEST_SUBGROUPS).find(
+          (sg) => sg.id === row.original.subgroupId,
+        );
+        const group = subgroup
+          ? Object.values(testData.TEST_GROUPS).find(
+              (g) => g.id === subgroup.groupId,
+            )
+          : null;
+        return group?.name || "-";
+      },
+    },
+    {
+      id: "subgroup",
+      header: "Subgroup",
+      cell: ({ row }) => {
+        const subgroup = Object.values(testData.TEST_SUBGROUPS).find(
+          (sg) => sg.id === row.original.subgroupId,
+        );
+        return subgroup?.name || "-";
+      },
+    },
+    {
       id: "actions",
       cell: ({ row }) => (
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => navigate(`/teacher/${row.original.id}`)}
+          onClick={() => navigate(`/student/${row.original.id}`)}
         >
           View Details <ChevronRight className="ml-2 h-4 w-4" />
         </Button>
@@ -67,6 +100,17 @@ export default function DepartmentDetails() {
     },
   ];
 
+  const handleCreateGroup = async (data: any) => {
+    // Here you would typically make an API call to create the exam
+    console.log(data);
+    toggle();
+    toast({
+      title: "Success",
+      description: "User created successfully",
+    });
+  };
+
+  
   if (!department) {
     return <div>Department not found</div>;
   }
@@ -80,11 +124,15 @@ export default function DepartmentDetails() {
           <h1 className="text-3xl font-bold">{department.name} Department</h1>
           <p className="text-muted-foreground">Department Code: {department.nameShort}</p>
         </div>
+        <Modal isOpen={isOpen} toggle={toggle}>
+          <CreateGroupForm onSubmit={handleCreateGroup} departmentId={departmentId}/>
+        </Modal>
 
         <div className="grid gap-6">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row justify-between items-center">
               <CardTitle>Groups</CardTitle>
+              <Button onClick={toggle}>Create Group</Button>
             </CardHeader>
             <CardContent>
               <DataTable 
@@ -97,12 +145,13 @@ export default function DepartmentDetails() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Teachers</CardTitle>
+              <CardTitle>Students</CardTitle>
             </CardHeader>
             <CardContent>
               <DataTable 
-                columns={teacherColumns} 
-                data={Object.values(testData.TEST_USERS).filter(u => u.role === UserRole.TEACHER)} 
+                columns={studentColumns} 
+                data={Object.values(testData.TEST_USERS)
+                .filter(u => u.role === UserRole.STUDENT)} 
                 initialSorting={[{ id: "name", desc: false }]}
               />
             </CardContent>

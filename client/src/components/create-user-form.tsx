@@ -20,20 +20,28 @@ import { Input } from "@/components/ui/input";
 import { UserRole } from "@shared/schema";
 import * as testData from "@shared/test-data";
 
-export function CreateUserForm({ onSubmit }) {
+export function CreateUserForm({ onSubmit, departmentId, groupId, subgroupId } : {
+  onSubmit: (data: any) => void;
+  departmentId: string | undefined;
+  groupId: string | undefined;
+  subgroupId: string | undefined;
+})  {
   const form = useForm({
     defaultValues: {
       name: "",
       email: "",
       password: "",
       phone: "",
-      role: "",
-      subgroupId: "",
+      groupId: groupId,
+      subgroupId: subgroupId,
+      departmentId: departmentId,
     },
   });
 
-  const isStudent = form.watch("role") === UserRole.STUDENT;
-
+  const subgroups = Object.values(testData.TEST_SUBGROUPS).filter(
+    (subgroup) => subgroup.groupId === groupId
+  );
+  
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -92,57 +100,71 @@ export function CreateUserForm({ onSubmit }) {
             </FormItem>
           )}
         />
+        
+        <FormField
+          control={form.control}
+          name="departmentId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Department</FormLabel>
+              <Input disabled value={Object.values(testData.TEST_DEPARTMENTS).find(d => d.id === field.value)?.name} />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}
-          name="role"
+          name="groupId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Role</FormLabel>
+              <FormLabel>Group</FormLabel>
+              <Input disabled value={Object.values(testData.TEST_GROUPS).find(g => g.id === field.value)?.name} />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        {subgroupId ? 
+          <FormField
+          control={form.control}
+          name="subgroupId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Subgroup</FormLabel>
+              <Input disabled value={Object.values(testData.TEST_SUBGROUPS).find(sg => sg.id === field.value)?.name} />
+              <FormMessage />
+            </FormItem>
+          )}
+        /> : 
+        <FormField
+          control={form.control}
+          name="subgroupId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className={form.formState.errors.subgroupId ? "text-black" : "text-black"}>
+              Subgroup</FormLabel>
               <Select required onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select role" />
+                    <SelectValue placeholder="Select Subgroup" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value={UserRole.STUDENT}>Student</SelectItem>
-                  <SelectItem value={UserRole.TEACHER}>Teacher</SelectItem>
+                  {subgroups.map((subgroup) => (
+                    <SelectItem key={subgroup.id} value={subgroup.id}>
+                      {subgroup.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormMessage />
             </FormItem>
           )}
         />
-
-        {isStudent && (
-          <FormField
-            control={form.control}
-            name="subgroupId"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Subgroup</FormLabel>
-                <Select required onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select subgroup" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    {Object.values(testData.TEST_SUBGROUPS).map((subgroup) => (
-                      <SelectItem key={subgroup.id} value={subgroup.id}>
-                        {subgroup.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
-
-        <Button type="submit" className="w-full">Create User</Button>
+        }
+        
+        <Button type="submit" className="w-full">Create Teacher</Button>
       </form>
     </Form>
   );

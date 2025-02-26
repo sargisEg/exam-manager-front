@@ -19,11 +19,16 @@ import {
 import { Input } from "@/components/ui/input";
 import * as testData from "@shared/test-data";
 
-export function CreateSubgroupForm({ onSubmit }) {
+export function CreateSubgroupForm({ onSubmit, departmentId, groupId } : {
+  onSubmit: (data: any) => void;
+  departmentId: string | undefined;
+  groupId: string | undefined;
+})  {
   const form = useForm({
     defaultValues: {
       name: "",
-      groupId: "",
+      departmentId: departmentId,
+      groupId: groupId,
     },
   });
 
@@ -43,6 +48,18 @@ export function CreateSubgroupForm({ onSubmit }) {
             </FormItem>
           )}
         />
+        
+        <FormField
+          control={form.control}
+          name="departmentId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Department</FormLabel>
+              <Input disabled value={Object.values(testData.TEST_DEPARTMENTS).find(d => d.id === field.value)?.name} />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}
@@ -50,20 +67,7 @@ export function CreateSubgroupForm({ onSubmit }) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Group</FormLabel>
-              <Select required onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select group" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {Object.values(testData.TEST_GROUPS).map((group) => (
-                    <SelectItem key={group.id} value={group.id}>
-                      {group.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Input disabled value={Object.values(testData.TEST_GROUPS).find(g => g.id === field.value)?.name} />
               <FormMessage />
             </FormItem>
           )}

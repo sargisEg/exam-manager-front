@@ -6,6 +6,7 @@ import {
   Course,
   Group,
   Subgroup,
+  TeacherSubgroup,
   Department
 } from "@shared/schema";
 
@@ -416,16 +417,16 @@ export const TEST_SUBGROUPS: Record<string, Subgroup> = {
     name: "Hist Subgroup 1A",
     groupId: "e9f0a1b2-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
   },
-  "01b2c3d4-9f5f-4b3a-a5e9-b9f1a3c1a0a1": {
-    id: "01b2c3d4-9f5f-4b3a-a5e9-b9f1a3c1a0a1",
-    name: "Hist Subgroup 1B",
-    groupId: "e9f0a1b2-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
-  },
-  "08c9d0e1-9f5f-4b3a-a5e9-b9f1a3c1a0a1": {
-    id: "08c9d0e1-9f5f-4b3a-a5e9-b9f1a3c1a0a1",
-    name: "Hist Subgroup 1C",
-    groupId: "e9f0a1b2-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
-  },
+  // "01b2c3d4-9f5f-4b3a-a5e9-b9f1a3c1a0a1": {
+  //   id: "01b2c3d4-9f5f-4b3a-a5e9-b9f1a3c1a0a1",
+  //   name: "Hist Subgroup 1B",
+  //   groupId: "e9f0a1b2-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
+  // },
+  // "08c9d0e1-9f5f-4b3a-a5e9-b9f1a3c1a0a1": {
+  //   id: "08c9d0e1-9f5f-4b3a-a5e9-b9f1a3c1a0a1",
+  //   name: "Hist Subgroup 1C",
+  //   groupId: "e9f0a1b2-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
+  // },
 };
 export const TEST_EXAM_RESULTS: Record<string, ExamResult> = {
   "result1": {
@@ -492,3 +493,7 @@ export const TEST_USERS: Record<string, User> = {
     subgroupId: "9c8b6d7e-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
   }
 }
+export const TEST_TEACHER_SUBGROUPS = [
+  { teacherId: "1", subgroupId: "9c8b6d7e-8f5f-4b3a-a5e9-b9f1a3c1a0a1" },
+  { teacherId: "1", subgroupId: "a9b0c1d2-8f5f-4b3a-a5e9-b9f1a3c1a0a1" },
+]

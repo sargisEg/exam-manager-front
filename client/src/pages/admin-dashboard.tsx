@@ -4,37 +4,33 @@ import { Navbar } from "@/components/navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
-import { Department, Group, Subgroup, Course, User, UserRole } from "@shared/schema";
+import {
+  Department,
+  Group,
+  Subgroup,
+  Course,
+  User,
+  UserRole,
+} from "@shared/schema";
 import { ColumnDef } from "@tanstack/react-table";
 import { useToast } from "@/hooks/use-toast";
 import { useLocation } from "wouter";
 import { Users, BookOpen, Building2, ChevronRight } from "lucide-react";
 import * as testData from "@shared/test-data";
-import { useState } from 'react';
-
-// Placeholder components - Replace with actual form components
-const CreateUserForm = () => <div>Create User Form Placeholder</div>;
-const CreateDepartmentForm = () => <div>Create Department Form Placeholder</div>;
-const CreateGroupForm = () => <div>Create Group Form Placeholder</div>;
-const CreateSubgroupForm = () => <div>Create Subgroup Form Placeholder</div>;
-const CreateCourseForm = () => <div>Create Course Form Placeholder</div>;
-const Modal = ({ isOpen, toggle, title, children }) => (
-  <div style={{ display: isOpen ? 'block' : 'none' }}>
-    <div>
-      <h2>{title}</h2>
-      {children}
-      <button onClick={toggle}>Close</button>
-    </div>
-  </div>
-);
-
+import useModal from "@/hooks/use-modal";
+import Modal from "@/components/ui/modal";
+import { CreateTeacherForm } from "@/components/create-teacher-form";
+import { CreateDepartmentForm } from "@/components/create-department-form";
+import { ReactNode, useState } from "react";
+import { Console } from "console";
 
 // Test data
 
 export default function AdminDashboard() {
   const { toast } = useToast();
   const [, navigate] = useLocation();
-  const [modalContent, setModalContent] = useState(null);
+  const { isOpen, toggle } = useModal();
+  const [modalContent, setModalContent] = useState<string | null>(null);
 
   const teacherColumns: ColumnDef<User>[] = [
     {
@@ -44,6 +40,10 @@ export default function AdminDashboard() {
     {
       accessorKey: "email",
       header: "Email",
+    },
+    {
+      accessorKey: "phone",
+      header: "Phone",
     },
     {
       id: "actions",
@@ -69,11 +69,37 @@ export default function AdminDashboard() {
       header: "Email",
     },
     {
+      accessorKey: "department",
+      header: "Department",
+      cell: ({ row }) => {
+        const subgroup = Object.values(testData.TEST_SUBGROUPS).find(
+          (sg) => sg.id === row.original.subgroupId,
+        );
+        const group = subgroup
+          ? Object.values(testData.TEST_GROUPS).find(
+              (g) => g.id === subgroup.groupId,
+            )
+          : null;
+        const department = group
+          ? Object.values(testData.TEST_DEPARTMENTS).find(
+              (d) => d.id === group.departmentId,
+            )
+          : null;
+        return department?.name || "-";
+      },
+    },
+    {
       id: "group",
       header: "Group",
       cell: ({ row }) => {
-        const subgroup = Object.values(testData.TEST_SUBGROUPS).find(sg => sg.id === row.original.subgroupId);
-        const group = subgroup ? Object.values(testData.TEST_GROUPS).find(g => g.id === subgroup.groupId) : null;
+        const subgroup = Object.values(testData.TEST_SUBGROUPS).find(
+          (sg) => sg.id === row.original.subgroupId,
+        );
+        const group = subgroup
+          ? Object.values(testData.TEST_GROUPS).find(
+              (g) => g.id === subgroup.groupId,
+            )
+          : null;
         return group?.name || "-";
       },
     },
@@ -81,7 +107,9 @@ export default function AdminDashboard() {
       id: "subgroup",
       header: "Subgroup",
       cell: ({ row }) => {
-        const subgroup = Object.values(testData.TEST_SUBGROUPS).find(sg => sg.id === row.original.subgroupId);
+        const subgroup = Object.values(testData.TEST_SUBGROUPS).find(
+          (sg) => sg.id === row.original.subgroupId,
+        );
         return subgroup?.name || "-";
       },
     },
@@ -112,7 +140,7 @@ export default function AdminDashboard() {
       id: "groups",
       header: "Groups",
       cell: ({ row }) => {
-        const groups = Object.values(testData.TEST_GROUPS).filter(g => true); // In real app, filter by department
+        const groups = Object.values(testData.TEST_GROUPS).filter((g) => true); // In real app, filter by department
         return (
           <div className="flex items-center gap-2">
             <span className="text-muted-foreground text-sm">
@@ -139,12 +167,16 @@ export default function AdminDashboard() {
     },
     {
       title: "Teachers",
-      value: Object.values(testData.TEST_USERS).filter(u => u.role === UserRole.TEACHER).length,
+      value: Object.values(testData.TEST_USERS).filter(
+        (u) => u.role === UserRole.TEACHER,
+      ).length,
       icon: Users,
     },
     {
       title: "Students",
-      value: Object.values(testData.TEST_USERS).filter(u => u.role === UserRole.STUDENT).length,
+      value: Object.values(testData.TEST_USERS).filter(
+        (u) => u.role === UserRole.STUDENT,
+      ).length,
       icon: Users,
     },
     {
@@ -154,85 +186,79 @@ export default function AdminDashboard() {
     },
   ];
 
+  const handleCreateTeacehr = async (data: any) => {
+    // Here you would typically make an API call to create the exam
+    //console.log(data);
+    toggle();
+    setModalContent(null);
+    toast({
+      title: "Success",
+      description: "User created successfully",
+    });
+  };
+
+  const handleCreateDepartment = async (data: any) => {
+    // Here you would typically make an API call to create the exam
+    console.log(data);
+    toggle();
+    setModalContent(null);
+    toast({
+      title: "Success",
+      description: "User created successfully",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       <main className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-          <div className="flex gap-2">
-            <Button onClick={() => setModalContent("user")}>Create User</Button>
-            <Button onClick={() => setModalContent("department")}>Create Department</Button>
-            <Button onClick={() => setModalContent("group")}>Create Group</Button>
-            <Button onClick={() => setModalContent("subgroup")}>Create Subgroup</Button>
-            <Button onClick={() => setModalContent("course")}>Create Course</Button>
-          </div>
         </div>
-
-        <Modal
-          isOpen={!!modalContent}
-          toggle={() => setModalContent(null)}
-          title={`Create ${modalContent ? modalContent.charAt(0).toUpperCase() + modalContent.slice(1) : ""}`}
-        >
-          {modalContent === "user" && (
-            <CreateUserForm onSubmit={(data) => {
-              console.log(data);
-              toast({
-                title: "Success",
-                description: "User created successfully",
-              });
-              setModalContent(null);
-            }} />
+        <Modal isOpen={isOpen} toggle={toggle}>
+          {modalContent === "teacher" && (
+            <CreateTeacherForm onSubmit={handleCreateTeacehr} />
           )}
           {modalContent === "department" && (
-            <CreateDepartmentForm onSubmit={(data) => {
-              console.log(data);
-              toast({
-                title: "Success",
-                description: "Department created successfully",
-              });
-              setModalContent(null);
-            }} />
-          )}
-          {modalContent === "group" && (
-            <CreateGroupForm onSubmit={(data) => {
-              console.log(data);
-              toast({
-                title: "Success",
-                description: "Group created successfully",
-              });
-              setModalContent(null);
-            }} />
-          )}
-          {modalContent === "subgroup" && (
-            <CreateSubgroupForm onSubmit={(data) => {
-              console.log(data);
-              toast({
-                title: "Success",
-                description: "Subgroup created successfully",
-              });
-              setModalContent(null);
-            }} />
-          )}
-          {modalContent === "course" && (
-            <CreateCourseForm onSubmit={(data) => {
-              console.log(data);
-              toast({
-                title: "Success",
-                description: "Course created successfully",
-              });
-              setModalContent(null);
-            }} />
+            <CreateDepartmentForm onSubmit={handleCreateDepartment} />
           )}
         </Modal>
 
+        <div className="grid gap-4 md:grid-cols-4 mb-8">
+          {stats.map((stat) => (
+            <Card key={stat.title}>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  {stat.title}
+                </CardTitle>
+                <stat.icon className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{stat.value}</div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
         <div className="space-y-6">
           <Card>
-            <CardHeader>
+            <CardHeader className="flex flex-row justify-between items-center">
               <CardTitle>Department Structure</CardTitle>
+              <Button
+                onClick={() => {
+                  setModalContent("department")
+                  toggle();
+                }}
+              >
+                Create Department
+              </Button>
             </CardHeader>
             <CardContent>
-              <DataTable columns={departmentColumns} data={Object.values(testData.TEST_DEPARTMENTS)} initialSorting={[{ id: "name", desc: false }]}/>
+              <DataTable
+                columns={departmentColumns}
+                data={Object.values(testData.TEST_DEPARTMENTS)}
+                initialSorting={[{ id: "name", desc: false }]}
+              />
             </CardContent>
           </Card>
 
@@ -244,13 +270,23 @@ export default function AdminDashboard() {
 
             <TabsContent value="teachers">
               <Card>
-                <CardHeader>
+                <CardHeader className="flex flex-row justify-between items-center">
                   <CardTitle>Teachers</CardTitle>
+                  <Button
+                    onClick={() => {
+                      setModalContent("teacher");
+                      toggle();
+                    }}
+                  >
+                    Create Teacher
+                  </Button>
                 </CardHeader>
                 <CardContent>
-                  <DataTable 
-                    columns={teacherColumns} 
-                    data={Object.values(testData.TEST_USERS).filter(u => u.role === UserRole.TEACHER)} 
+                  <DataTable
+                    columns={teacherColumns}
+                    data={Object.values(testData.TEST_USERS).filter(
+                      (u) => u.role === UserRole.TEACHER,
+                    )}
                     initialSorting={[{ id: "name", desc: false }]}
                   />
                 </CardContent>
@@ -263,9 +299,11 @@ export default function AdminDashboard() {
                   <CardTitle>Students</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <DataTable 
-                    columns={studentColumns} 
-                    data={Object.values(testData.TEST_USERS).filter(u => u.role === UserRole.STUDENT)} 
+                  <DataTable
+                    columns={studentColumns}
+                    data={Object.values(testData.TEST_USERS).filter(
+                      (u) => u.role === UserRole.STUDENT,
+                    )}
                     initialSorting={[{ id: "name", desc: false }]}
                   />
                 </CardContent>

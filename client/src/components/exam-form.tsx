@@ -21,7 +21,7 @@ import { ExamType } from "@shared/schema";
 import * as testData from "@shared/test-data";
 import { useState } from "react";
 
-export function ExamForm({ onSubmit }) {
+export function ExamForm({ onSubmit } : { onSubmit: (data: any) => void }) {
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
   const [selectedSubgroupId, setSelectedSubgroupId] = useState<string | null>(null);
 
@@ -51,7 +51,7 @@ export function ExamForm({ onSubmit }) {
       )
     : [];
 
-  const handleSubmit = (data) => {
+  const handleSubmit = (data: any) => {
     onSubmit(data);
   };
 

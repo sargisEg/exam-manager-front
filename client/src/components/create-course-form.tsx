@@ -20,12 +20,18 @@ import { Input } from "@/components/ui/input";
 import { UserRole } from "@shared/schema";
 import * as testData from "@shared/test-data";
 
-export function CreateCourseForm({ onSubmit }) {
+export function CreateCourseForm({ onSubmit, departmentId, groupId } : {
+  onSubmit: (data: any) => void;
+  departmentId: string | undefined;
+  groupId: string | undefined;
+})  {
+  
   const form = useForm({
     defaultValues: {
       name: "",
-      teacherId: "",
-      groupId: "",
+      teacherId: undefined,
+      groupId: groupId,
+      departmentId: departmentId,
     },
   });
 
@@ -55,7 +61,8 @@ export function CreateCourseForm({ onSubmit }) {
           name="teacherId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Teacher</FormLabel>
+              <FormLabel className={form.formState.errors.teacherId ? "text-black" : "text-black"}>
+                Teacher</FormLabel>
               <Select required onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
@@ -77,24 +84,23 @@ export function CreateCourseForm({ onSubmit }) {
 
         <FormField
           control={form.control}
+          name="departmentId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Department</FormLabel>
+              <Input disabled value={Object.values(testData.TEST_DEPARTMENTS).find(d => d.id === field.value)?.name} />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="groupId"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Group</FormLabel>
-              <Select required onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select group" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {Object.values(testData.TEST_GROUPS).map((group) => (
-                    <SelectItem key={group.id} value={group.id}>
-                      {group.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Input disabled value={Object.values(testData.TEST_GROUPS).find(g => g.id === field.value)?.name} />
               <FormMessage />
             </FormItem>
           )}

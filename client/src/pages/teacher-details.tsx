@@ -8,45 +8,14 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { useLocation } from "wouter";
-
-// Test data
-const TEST_USERS: Record<string, User> = {
-  "2": {
-    id: 2,
-    name: "Jane Smith",
-    username: "jane",
-    password: "test",
-    email: "jane@example.com",
-    phone: "1234567891",
-    role: UserRole.TEACHER,
-    subgroupId: null,
-  },
-};
-
-const TEST_GROUPS: Group[] = [
-  { id: 1, name: "CS-2025", startYear: 2025, endYear: 2029 },
-];
-
-const TEST_SUBGROUPS: Subgroup[] = [
-  { id: 1, name: "CS-2025-A", groupId: 1 },
-  { id: 2, name: "CS-2025-B", groupId: 1 },
-];
-
-const TEST_COURSES: Course[] = [
-  { id: 1, name: "Mathematics", groupId: 1 },
-  { id: 2, name: "Physics", groupId: 1 },
-];
+import * as testData from "@shared/test-data";
 
 // In a real app, we would have a teacherSubgroups table to track which subgroups a teacher teaches
-const TEST_TEACHER_SUBGROUPS = [
-  { teacherId: 2, subgroupId: 1 },
-  { teacherId: 2, subgroupId: 2 },
-];
 
 export default function TeacherDetails() {
   const { teacherId } = useParams();
   const [, navigate] = useLocation();
-  const teacher = TEST_USERS[teacherId || ""];
+  const teacher = testData.TEST_USERS[teacherId || ""];
 
   const groupColumns: ColumnDef<Group>[] = [
     {
@@ -56,18 +25,6 @@ export default function TeacherDetails() {
     {
       accessorKey: "startYear",
       header: "Start Year",
-    },
-    {
-      id: "actions",
-      cell: ({ row }) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate(`/group/${row.original.id}`)}
-        >
-          View Details <ChevronRight className="ml-2 h-4 w-4" />
-        </Button>
-      ),
     },
   ];
 
@@ -80,22 +37,11 @@ export default function TeacherDetails() {
       id: "group",
       header: "Group",
       cell: ({ row }) => {
-        const group = TEST_GROUPS.find(g => g.id === row.original.groupId);
+        const group = Object.values(testData.TEST_GROUPS).find(g => g.id === row.original.groupId);
         return group?.name || "-";
       },
     },
-    {
-      id: "actions",
-      cell: ({ row }) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate(`/subgroup/${row.original.id}`)}
-        >
-          View Details <ChevronRight className="ml-2 h-4 w-4" />
-        </Button>
-      ),
-    },
+
   ];
 
   const courseColumns: ColumnDef<Course>[] = [
@@ -107,21 +53,9 @@ export default function TeacherDetails() {
       id: "group",
       header: "Group",
       cell: ({ row }) => {
-        const group = TEST_GROUPS.find(g => g.id === row.original.groupId);
+        const group = Object.values(testData.TEST_GROUPS).find(g => g.id === row.original.groupId);
         return group?.name || "-";
       },
-    },
-    {
-      id: "actions",
-      cell: ({ row }) => (
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => navigate(`/course/${row.original.id}`)}
-        >
-          View Details <ChevronRight className="ml-2 h-4 w-4" />
-        </Button>
-      ),
     },
   ];
 
@@ -130,13 +64,13 @@ export default function TeacherDetails() {
   }
 
   // Get the teacher's subgroups
-  const teacherSubgroupIds = TEST_TEACHER_SUBGROUPS
-    .filter(ts => ts.teacherId === Number(teacherId))
+  const teacherSubgroupIds = testData.TEST_TEACHER_SUBGROUPS
+    .filter(ts => ts.teacherId === teacherId)
     .map(ts => ts.subgroupId);
 
   // Get the groups that contain the teacher's subgroups
   const teacherGroupIds = Array.from(new Set(
-    TEST_SUBGROUPS
+    Object.values(testData.TEST_SUBGROUPS)
       .filter(sg => teacherSubgroupIds.includes(sg.id))
       .map(sg => sg.groupId)
   ));
@@ -159,6 +93,10 @@ export default function TeacherDetails() {
               <div>
                 <div className="text-sm font-medium text-muted-foreground">Email</div>
                 <div>{teacher.email}</div>
+              </div>             
+              <div>
+                <div className="text-sm font-medium text-muted-foreground">Phone</div>
+                <div>{teacher.phone}</div>
               </div>
             </CardContent>
           </Card>
@@ -170,7 +108,8 @@ export default function TeacherDetails() {
             <CardContent>
               <DataTable 
                 columns={groupColumns} 
-                data={TEST_GROUPS.filter(g => teacherGroupIds.includes(g.id))} 
+                data={Object.values(testData.TEST_GROUPS).filter(g => teacherGroupIds.includes(g.id))} 
+                initialSorting={[{ id: "name", desc: false }]}
               />
             </CardContent>
           </Card>
@@ -182,7 +121,8 @@ export default function TeacherDetails() {
             <CardContent>
               <DataTable 
                 columns={subgroupColumns} 
-                data={TEST_SUBGROUPS.filter(sg => teacherSubgroupIds.includes(sg.id))} 
+                data={Object.values(testData.TEST_SUBGROUPS).filter(sg => teacherSubgroupIds.includes(sg.id))} 
+                initialSorting={[{ id: "name", desc: false }]}
               />
             </CardContent>
           </Card>
@@ -194,7 +134,8 @@ export default function TeacherDetails() {
             <CardContent>
               <DataTable 
                 columns={courseColumns} 
-                data={TEST_COURSES.filter(c => teacherGroupIds.includes(c.groupId))} 
+                data={Object.values(testData.TEST_COURSES).filter(c => teacherGroupIds.includes(c.groupId))} 
+                initialSorting={[{ id: "name", desc: false }]}
               />
             </CardContent>
           </Card>

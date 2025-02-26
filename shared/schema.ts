@@ -102,3 +102,4 @@ export type Subgroup = typeof subgroups.$inferSelect;
 export type Course = typeof courses.$inferSelect;
 export type Exam = typeof exams.$inferSelect;
 export type ExamResult = typeof examResults.$inferSelect;
+export type TeacherSubgroup = typeof teacherSubgroups.$inferSelect;

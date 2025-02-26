@@ -6,56 +6,12 @@ import { DataTable } from "@/components/data-table";
 import { User, UserRole, Exam, ExamResult, Subgroup, Group, ExamStatus, ExamType } from "@shared/schema";
 import { ColumnDef } from "@tanstack/react-table";
 import { format } from "date-fns";
+import * as testData from "@shared/test-data";
 
-// Test data
-const TEST_USERS: Record<string, User> = {
-  "1": {
-    id: 1,
-    name: "John Doe",
-    username: "john",
-    password: "test",
-    email: "john@example.com",
-    phone: "1234567890",
-    role: UserRole.STUDENT,
-    subgroupId: 1,
-  },
-};
-
-const TEST_GROUPS: Group[] = [
-  { id: 1, name: "CS-2025", startYear: 2025, endYear: 2029 },
-];
-
-const TEST_SUBGROUPS: Subgroup[] = [
-  { id: 1, name: "CS-2025-A", groupId: 1 },
-];
-
-const TEST_EXAMS: Exam[] = [
-  {
-    id: 1,
-    title: "Mathematics Midterm",
-    courseId: 1,
-    subgroupId: 1,
-    location: "Room 101",
-    startDate: new Date("2025-02-20T10:00:00"),
-    endDate: new Date("2025-02-20T12:00:00"),
-    maxPoints: 100,
-    status: ExamStatus.UPCOMING,
-    type: ExamType.MIDTERM,
-  },
-];
-
-const TEST_RESULTS: ExamResult[] = [
-  {
-    id: 1,
-    studentId: 1,
-    examId: 1,
-    points: 85,
-  },
-];
 
 export default function StudentDetails() {
   const { studentId } = useParams();
-  const student = TEST_USERS[studentId || ""];
+  const student = testData.TEST_USERS[studentId || ""];
 
   const examColumns: ColumnDef<Exam>[] = [
     {
@@ -93,8 +49,14 @@ export default function StudentDetails() {
       cell: ({ row }) => row.original.exam?.type || "-",
     },
     {
+      accessorKey: "startDate",
+      header: "Date",
+      cell: ({ row }) => format(new Date(testData.TEST_EXAMS[row.original.examId].startDate), "PPP"),
+    },
+    {
       accessorKey: "points",
       header: "Points",
+      cell: ({ row }) => row.original.point || "-",
     },
     {
       accessorKey: "exam.maxPoints",
@@ -107,8 +69,8 @@ export default function StudentDetails() {
     return <div>Student not found</div>;
   }
 
-  const subgroup = TEST_SUBGROUPS.find(sg => sg.id === student.subgroupId);
-  const group = subgroup ? TEST_GROUPS.find(g => g.id === subgroup.groupId) : null;
+  const subgroup = Object.values(testData.TEST_SUBGROUPS).find(sg => sg.id === student.subgroupId);
+  const group = subgroup ? Object.values(testData.TEST_GROUPS).find(g => g.id === subgroup.groupId) : null;
 
   return (
     <div className="min-h-screen bg-background">
@@ -147,10 +109,11 @@ export default function StudentDetails() {
             <CardContent>
               <DataTable 
                 columns={examColumns} 
-                data={TEST_EXAMS.filter(e => 
+                data={Object.values(testData.TEST_EXAMS).filter(e => 
                   e.status === ExamStatus.UPCOMING && 
                   e.subgroupId === student.subgroupId
                 )} 
+                initialSorting={[{ id: "name", desc: false }]}
               />
             </CardContent>
           </Card>
@@ -162,12 +125,13 @@ export default function StudentDetails() {
             <CardContent>
               <DataTable 
                 columns={resultColumns} 
-                data={TEST_RESULTS
-                  .filter(r => r.studentId === Number(studentId))
+                data={Object.values(testData.TEST_EXAM_RESULTS)
+                  .filter(r => r.studentId === studentId)
                   .map(result => ({
                     ...result,
-                    exam: TEST_EXAMS.find(e => e.id === result.examId),
+                    exam: Object.values(testData.TEST_EXAMS).find(e => e.id === result.examId),
                   }))} 
+                initialSorting={[{ id: "name", desc: false }]}
               />
             </CardContent>
           </Card>

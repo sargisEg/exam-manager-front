@@ -10,21 +10,20 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import * as testData from "@shared/test-data";
 
-export function CreateGroupForm({ onSubmit, departmentId } : {
-  onSubmit: (data: any) => void;
-  departmentId: string | undefined;
-}) {
+export function CreateTeacherForm({ onSubmit } : { onSubmit: (data: any) => void }) {
+  
+  
   const form = useForm({
     defaultValues: {
       name: "",
-      startYear: new Date().getFullYear(),
-      endYear: new Date().getFullYear() + 4,
-      departmentId: departmentId,
+      email: "",
+      password: "",
+      phone: "",
+      role: "",
     },
   });
-
+  
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -44,17 +43,12 @@ export function CreateGroupForm({ onSubmit, departmentId } : {
 
         <FormField
           control={form.control}
-          name="startYear"
+          name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Start Year</FormLabel>
+              <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input 
-                  required 
-                  type="number" 
-                  {...field}
-                  onChange={(e) => field.onChange(parseInt(e.target.value))}
-                />
+                <Input required type="email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -63,17 +57,12 @@ export function CreateGroupForm({ onSubmit, departmentId } : {
 
         <FormField
           control={form.control}
-          name="endYear"
+          name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>End Year</FormLabel>
+              <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input 
-                  required 
-                  type="number" 
-                  {...field}
-                  onChange={(e) => field.onChange(parseInt(e.target.value))}
-                />
+                <Input required type="password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -82,17 +71,19 @@ export function CreateGroupForm({ onSubmit, departmentId } : {
 
         <FormField
           control={form.control}
-          name="departmentId"
+          name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Department</FormLabel>
-              <Input disabled value={Object.values(testData.TEST_DEPARTMENTS).find(d => d.id === field.value)?.name} />
+              <FormLabel>Phone</FormLabel>
+              <FormControl>
+                <Input required type="tel" {...field} />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type="submit" className="w-full">Create Group</Button>
+        <Button type="submit" className="w-full">Create User</Button>
       </form>
     </Form>
   );
