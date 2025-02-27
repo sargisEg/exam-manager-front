@@ -6,25 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { insertUserSchema } from "@shared/schema";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+
 
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
@@ -46,23 +30,11 @@ export default function AuthPage() {
     }
   }, [user, setLocation]);
 
+
   const loginForm = useForm({
     defaultValues: {
-      username: "",
-      password: "",
-    },
-  });
-
-  const registerForm = useForm({
-    resolver: zodResolver(insertUserSchema),
-    defaultValues: {
-      username: "",
-      password: "",
-      name: "",
       email: "",
-      phone: "",
-      role: UserRole.STUDENT,
-      subgroupId: null,
+      password: "",
     },
   });
 
@@ -137,10 +109,6 @@ export default function AuthPage() {
           </CardHeader>
           <CardContent>
             <Tabs defaultValue="login">
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="register">Register</TabsTrigger>
-              </TabsList>
 
               <TabsContent value="login">
                 <form
@@ -150,8 +118,8 @@ export default function AuthPage() {
                   className="space-y-4"
                 >
                   <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
-                    <Input id="username" {...loginForm.register("username")} />
+                    <Label htmlFor="eamil">Email</Label>
+                    <Input id="eamil" {...loginForm.register("email")} />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="password">Password</Label>
@@ -174,123 +142,6 @@ export default function AuthPage() {
                     {loginMutation.isPending ? "Logging in..." : "Login"}
                   </Button>
                 </form>
-              </TabsContent>
-
-              <TabsContent value="register">
-                <Form {...registerForm}>
-                  <form
-                    onSubmit={registerForm.handleSubmit((data) =>
-                      registerMutation.mutate(data),
-                    )}
-                    className="space-y-4"
-                  >
-                    <FormField
-                      control={registerForm.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Name</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={registerForm.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Username</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={registerForm.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Password</FormLabel>
-                          <FormControl>
-                            <Input type="password" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={registerForm.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input type="email" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={registerForm.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Phone</FormLabel>
-                          <FormControl>
-                            <Input {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={registerForm.control}
-                      name="role"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Role</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select a role" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value={UserRole.STUDENT}>
-                                Student
-                              </SelectItem>
-                              <SelectItem value={UserRole.TEACHER}>
-                                Teacher
-                              </SelectItem>
-                              <SelectItem value={UserRole.ADMIN}>
-                                Admin
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button
-                      type="submit"
-                      className="w-full"
-                      disabled={registerMutation.isPending}
-                    >
-                      {registerMutation.isPending
-                        ? "Registering..."
-                        : "Register"}
-                    </Button>
-                  </form>
-                </Form>
               </TabsContent>
             </Tabs>
           </CardContent>

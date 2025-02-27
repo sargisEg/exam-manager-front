@@ -1,42 +1,10 @@
 import { createContext, ReactNode, useContext } from "react";
-import { queryClient } from "@/lib/queryClient";
+import {apiRequest, queryClient} from "@/lib/queryClient";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { User } from "@shared/schema";
-import { UserRole } from "@shared/schema";
-
-const TEST_TEACHER: User = {
-  id: "1",
-  name: "Test Teacher",
-  password: "test",
-  email: "teacher@example.com",
-  phone: "1234567890",
-  role: UserRole.TEACHER,
-  subgroupId: null,
-};
-
-
-const TEST_STUDENT: User = {
-  id: "2",
-  name: "Test SYUDENT",
-  password: "test",
-  email: "student@example.com",
-  phone: "1234567890",
-  role: UserRole.STUDENT,
-  subgroupId: "9c8b6d7e-8f5f-4b3a-a5e9-b9f1a3c1a0a1", //CS Subgroup 1A
-};
-
-const TEST_ADMIN: User = {
-  id: "3",
-  name: "Test Admin",
-  password: "test",
-  email: "student@example.com",
-  phone: "1234567890",
-  role: UserRole.ADMIN,
-  subgroupId: null, //CS Subgroup 1A
-};
+import {SignInResponse, UserResponse} from "@shared/schema";
 
 type AuthContextType = {
-  user: User | null;
+  user: UserResponse | null;
   isLoading: boolean;
   error: Error | null;
   loginMutation: any;
@@ -53,42 +21,42 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     error,
   } = useQuery({
     queryKey: ["user"],
-    queryFn: async () => {
-      const response = await fetch("/api/user", {
-        credentials: "include",
-      });
-      if (!response.ok) return null;
-      return response.json();
-    },
+    queryFn: async () : Promise<UserResponse | null> => {
+      const refreshToken = localStorage.getItem("refresh");
+      const token = localStorage.getItem("token");
+      if (refreshToken !== null || token !== null) {
+        const userResponse = await apiRequest("GET", "/api/user/v1/me");
+        const userResponseJson: UserResponse = await userResponse.json() as UserResponse;
+        localStorage.setItem('userId', userResponseJson.id);
+        return userResponseJson;
+      }
+      return null;
+      },
   });
 
   const loginMutation = useMutation({
-    mutationFn: async (credentials: { username: string; password: string }) => {
-      // const response = await fetch("/api/login", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   credentials: "include",
-      //   body: JSON.stringify(credentials),
-      // });
-      let response: User | null = null;
-      if (credentials.username == "teacher") {
-        response = TEST_TEACHER;
-      }
-      if (credentials.username == "student") {
-        response = TEST_STUDENT;
-      }
-      if (credentials.username == "admin") {
-        response = TEST_ADMIN;
-      }
-      if (response === null) {
+    mutationFn: async (credentials: { email: string; password: string }): Promise<UserResponse> => {
+      localStorage.removeItem('token');
+      localStorage.removeItem('refresh');
+      const tokenResponse = await apiRequest("POST", "/api/auth/v1/sign-in", credentials);
+
+      if (tokenResponse === null || !tokenResponse.ok) {
         throw new Error("Login failed");
       }
-      localStorage.setItem('userId', response.id);
-      localStorage.setItem('subgroupId', response.subgroupId ? response.subgroupId : '');
-      // return response.json();
-      return response;
+      const tokenResponseJson: SignInResponse = await tokenResponse.json() as SignInResponse;
+      localStorage.setItem('token', tokenResponseJson.token);
+      localStorage.setItem('refresh', tokenResponseJson.refreshToken);
+
+      const userResponse = await apiRequest("GET", "/api/user/v1/me");
+      const userResponseJson: UserResponse = await userResponse.json() as UserResponse;
+
+      localStorage.setItem('userId', userResponseJson.id);
+      localStorage.setItem('email', userResponseJson.email);
+
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+      return userResponseJson;
     },
-    onSuccess: (data) => {
+    onSuccess: (data : UserResponse) => {
       queryClient.setQueryData(["user"], data);
     },
   });
@@ -110,14 +78,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch("/api/logout", {
-        method: "POST",
-        credentials: "include",
-      });
-      if (!response.ok) {
-        throw new Error("Logout failed");
-      }
-      queryClient.invalidateQueries();
+      await queryClient.invalidateQueries();
     },
   });
 

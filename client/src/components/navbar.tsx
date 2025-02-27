@@ -41,11 +41,14 @@ export function Navbar() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="gap-2">
                   <User className="h-4 w-4" />
-                  {user.name}
+                  {user.fullName}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => logoutMutation.mutate()}>
+                <DropdownMenuItem onClick={() => {
+                  localStorage.clear();
+                  window.location.href = "/";
+                }}>
                   Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>

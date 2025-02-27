@@ -10,17 +10,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {CreateTeacherRequest} from "@shared/request-model.ts";
 
-export function CreateTeacherForm({ onSubmit } : { onSubmit: (data: any) => void }) {
+export function CreateTeacherForm({ onSubmit } : { onSubmit: (data: CreateTeacherRequest) => void }) {
   
   
   const form = useForm({
     defaultValues: {
-      name: "",
+      fullName: "",
       email: "",
       password: "",
       phone: "",
-      role: "",
     },
   });
   
@@ -29,7 +29,7 @@ export function CreateTeacherForm({ onSubmit } : { onSubmit: (data: any) => void
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
-          name="name"
+          name="fullName"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Name</FormLabel>

@@ -9,32 +9,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { UserRole } from "@shared/schema";
-import * as testData from "@shared/test-data";
+import {CreateDepartmentRequest} from "@shared/request-model.ts";
 
-export function CreateDepartmentForm({ onSubmit } : { onSubmit: (data: any) => void }) {
+export function CreateDepartmentForm({ onSubmit } : { onSubmit: (data: CreateDepartmentRequest) => void }) {
   
   const form = useForm({
     defaultValues: {
       name: "",
       nameShort: "",
-      headOfDepartment: undefined,
     },
   });
-
-  const teachers = Object.values(testData.TEST_USERS).filter(
-    (user) => user.role === UserRole.TEACHER
-  );
   
-  const handleSubmit = (data: any) => {
+  const handleSubmit = (data: CreateDepartmentRequest) => {
     onSubmit(data);
   };
 
@@ -64,33 +51,6 @@ export function CreateDepartmentForm({ onSubmit } : { onSubmit: (data: any) => v
               <FormControl>
                 <Input required {...field} />
               </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="headOfDepartment"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className={form.formState.errors.headOfDepartment ? "text-black" : "text-black"}>
-                Head of Department
-              </FormLabel>
-              <Select required onValueChange={field.onChange} value={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select head of department" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {teachers.map((teacher) => (
-                    <SelectItem key={teacher.id} value={teacher.id}>
-                      {teacher.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
               <FormMessage />
             </FormItem>
           )}

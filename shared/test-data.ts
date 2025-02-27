@@ -6,7 +6,6 @@ import {
   Course,
   Group,
   Subgroup,
-  TeacherSubgroup,
   Department
 } from "@shared/schema";
 
@@ -467,6 +466,66 @@ export const TEST_DEPARTMENTS: Record<string, Department> = {
     headOfDepartment: "1"
   },
   "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1": {
+    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
+      name: "Department 2",
+      nameShort: "D2",
+      headOfDepartment: "1"
+  },
+  "1": {
+    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
+      name: "Department 2",
+      nameShort: "D2",
+      headOfDepartment: "1"
+  },
+  "2": {
+    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
+      name: "Department 2",
+      nameShort: "D2",
+      headOfDepartment: "1"
+  },
+  "3": {
+    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
+      name: "Department 2",
+      nameShort: "D2",
+      headOfDepartment: "1"
+  },
+  "4": {
+    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
+      name: "Department 2",
+      nameShort: "D2",
+      headOfDepartment: "1"
+  },
+  "5": {
+    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
+      name: "Department 2",
+      nameShort: "D2",
+      headOfDepartment: "1"
+  },
+  "6": {
+    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
+      name: "Department 2",
+      nameShort: "D2",
+      headOfDepartment: "1"
+  },
+  "7": {
+    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
+      name: "Department 2",
+      nameShort: "D2",
+      headOfDepartment: "1"
+  },
+  "8": {
+    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
+      name: "Department 2",
+      nameShort: "D2",
+      headOfDepartment: "1"
+  },
+  "9": {
+    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
+      name: "Department 2",
+      nameShort: "D2",
+      headOfDepartment: "1"
+  },
+  "10": {
     id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
       name: "Department 2",
       nameShort: "D2",

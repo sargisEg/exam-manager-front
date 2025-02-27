@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, timestamp, foreignKey, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, integer, timestamp, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -103,3 +103,31 @@ export type Course = typeof courses.$inferSelect;
 export type Exam = typeof exams.$inferSelect;
 export type ExamResult = typeof examResults.$inferSelect;
 export type TeacherSubgroup = typeof teacherSubgroups.$inferSelect;
+
+
+export interface SignInResponse {
+  token: string;
+  refreshToken: string;
+}
+
+export interface UserResponse {
+  id: string;
+  email: string;
+  fullName: string;
+  phone: string;
+  role: UserRole;
+}
+
+export interface DepartmentResponse {
+  id: string;
+  name: string;
+  nameShort: string;
+}
+
+export interface Page<T> {
+  content: T[];
+  page: {
+    totalElements: number;
+    totalPages: number;
+  }
+}
