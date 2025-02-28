@@ -3,13 +3,11 @@ import {Navbar} from "@/components/navbar";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Button} from "@/components/ui/button";
-import {DepartmentResponse, Page, UserResponse, UserRole} from "@shared/response-models.ts";
-import {User} from "@shared/schema.ts";
+import {DepartmentResponse, Page, StudentResponse, UserResponse} from "@shared/response-models.ts";
 import {ColumnDef} from "@tanstack/react-table";
 import {useToast} from "@/hooks/use-toast";
 import {useLocation} from "wouter";
 import {Building2, ChevronRight, Users} from "lucide-react";
-import * as testData from "@shared/test-data";
 import useModal from "@/hooks/use-modal";
 import Modal from "@/components/ui/modal";
 import {CreateTeacherForm} from "@/components/create-teacher-form";
@@ -18,33 +16,6 @@ import {useState} from "react";
 import {apiRequest} from "@/lib/queryClient.ts";
 import {CreateDepartmentRequest, CreateTeacherRequest} from "@shared/request-models.ts";
 
-const stats = [
-    {
-        title: "Total Users",
-        value: Object.values(testData.TEST_USERS).length,
-        icon: Users,
-    },
-    {
-        title: "Teachers",
-        value: Object.values(testData.TEST_USERS).filter(
-            (u) => u.role === UserRole.TEACHER,
-        ).length,
-        icon: Users,
-    },
-    {
-        title: "Students",
-        value: Object.values(testData.TEST_USERS).filter(
-            (u) => u.role === UserRole.STUDENT,
-        ).length,
-        icon: Users,
-    },
-    {
-        title: "Departments",
-        value: Object.values(testData.TEST_DEPARTMENTS).length,
-        icon: Building2,
-    },
-];
-
 export default function AdminDashboard() {
     const {toast} = useToast();
     const {isOpen, toggle} = useModal();
@@ -52,6 +23,9 @@ export default function AdminDashboard() {
     const [, navigate] = useLocation();
     const [resetDepartments, setResetDepartments] = useState(true);
     const [resetTeachers, setResetTeachers] = useState(true);
+    const [studentCount, setStudentCount] = useState(0);
+    const [teacherCount, setTeacherCount] = useState(0);
+    const [departmentCount, setDepartmentCount] = useState(0);
 
     const departmentColumns: ColumnDef<DepartmentResponse>[] = [
         {
@@ -106,9 +80,9 @@ export default function AdminDashboard() {
             ),
         },
     ];
-    const studentColumns: ColumnDef<User>[] = [
+    const studentColumns: ColumnDef<StudentResponse>[] = [
         {
-            accessorKey: "name",
+            accessorKey: "fullName",
             header: "Name",
         },
         {
@@ -119,45 +93,21 @@ export default function AdminDashboard() {
             accessorKey: "department",
             header: "Department",
             cell: ({row}) => {
-                const subgroup = Object.values(testData.TEST_SUBGROUPS).find(
-                    (sg) => sg.id === row.original.subgroupId,
-                );
-                const group = subgroup
-                    ? Object.values(testData.TEST_GROUPS).find(
-                        (g) => g.id === subgroup.groupId,
-                    )
-                    : null;
-                const department = group
-                    ? Object.values(testData.TEST_DEPARTMENTS).find(
-                        (d) => d.id === group.departmentId,
-                    )
-                    : null;
-                return department?.name || "-";
+                return row.original.subgroup.group.department.name || "-";
             },
         },
         {
             id: "group",
             header: "Group",
             cell: ({row}) => {
-                const subgroup = Object.values(testData.TEST_SUBGROUPS).find(
-                    (sg) => sg.id === row.original.subgroupId,
-                );
-                const group = subgroup
-                    ? Object.values(testData.TEST_GROUPS).find(
-                        (g) => g.id === subgroup.groupId,
-                    )
-                    : null;
-                return group?.name || "-";
+                return row.original.subgroup.group.name || "-";
             },
         },
         {
             id: "subgroup",
             header: "Subgroup",
             cell: ({row}) => {
-                const subgroup = Object.values(testData.TEST_SUBGROUPS).find(
-                    (sg) => sg.id === row.original.subgroupId,
-                );
-                return subgroup?.name || "-";
+                return row.original.subgroup.name || "-";
             },
         },
         {
@@ -174,17 +124,45 @@ export default function AdminDashboard() {
         },
     ];
 
+    const stats = [
+        {
+            title: "Total Users",
+            value: studentCount + teacherCount,
+            icon: Users,
+        },
+        {
+            title: "Teachers",
+            value: teacherCount,
+            icon: Users,
+        },
+        {
+            title: "Students",
+            value: studentCount,
+            icon: Users,
+        },
+        {
+            title: "Departments",
+            value: departmentCount,
+            icon: Building2,
+        },
+    ];
     const getDepartments = async (page: number, size: number): Promise<Page<DepartmentResponse>> => {
         const response = await apiRequest("GET", `/api/core/v1/departments?page=${page}&size=${size}`);
-        return await response.json();
+        const r = await response.json() as Page<DepartmentResponse>;
+        setDepartmentCount(r.page.totalElements);
+        return r;
     };
     const getTeachers = async (page: number, size: number): Promise<Page<UserResponse>> => {
         const response = await apiRequest("GET", `/api/core/v1/teachers/page?page=${page}&size=${size}`);
-        return await response.json();
+        const r = await response.json() as Page<UserResponse>;
+        setTeacherCount(r.page.totalElements);
+        return r;
     };
-    const getStudents = async (page: number, size: number): Promise<Page<DepartmentResponse>> => {
-        const response = await apiRequest("GET", `/api/core/v1/departments?page=${page}&size=${size}`);
-        return await response.json();
+    const getStudents = async (page: number, size: number): Promise<Page<StudentResponse>> => {
+        const response = await apiRequest("GET", `/api/core/v1/students/page?page=${page}&size=${size}`);
+        const r = await response.json() as Page<StudentResponse>;
+        setStudentCount(r.page.totalElements);
+        return r;
     };
 
     const handleCreateTeacher = async (data: CreateTeacherRequest) => {
@@ -300,13 +278,11 @@ export default function AdminDashboard() {
                                     <CardTitle>Students</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    {/*<DataTable*/}
-                                    {/*  columns={studentColumns}*/}
-                                    {/*  data={Object.values(testData.TEST_USERS).filter(*/}
-                                    {/*    (u) => u.role === UserRole.STUDENT,*/}
-                                    {/*  )}*/}
-                                    {/*  initialSorting={initialSorting}*/}
-                                    {/*/>*/}
+                                    {getTable(
+                                        getStudents,
+                                        studentColumns,
+                                        true
+                                    )}
                                 </CardContent>
                             </Card>
                         </TabsContent>

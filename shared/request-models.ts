@@ -24,3 +24,11 @@ export interface CreateCourseRequest {
     name: string;
     teacherId: string;
 }
+
+export interface CreateStudentRequest {
+    fullName: string;
+    email: string;
+    phone: string;
+    password: string;
+    subgroupId: string;
+}

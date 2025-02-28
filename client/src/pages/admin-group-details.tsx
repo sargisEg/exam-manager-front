@@ -3,19 +3,16 @@ import {Navbar} from "@/components/navbar";
 import {BackButton} from "@/components/ui/back-button";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {getTable} from "@/components/data-table";
-import {User} from "@shared/schema";
 import {
-    UserRole,
     Page,
     GroupResponse,
     SubgroupResponse,
-    CourseResponse
+    CourseResponse, StudentResponse
 } from "@shared/response-models.ts";
 import {ColumnDef} from "@tanstack/react-table";
 import {Button} from "@/components/ui/button";
 import {ChevronRight} from "lucide-react";
 import {useLocation} from "wouter";
-import * as testData from "@shared/test-data";
 import {useToast} from "@/hooks/use-toast";
 import useModal from "@/hooks/use-modal";
 import {CreateSubgroupForm} from "@/components/create-subgroup-form";
@@ -24,17 +21,39 @@ import Modal from "@/components/ui/modal";
 import {useEffect, useState} from "react";
 import {CreateUserForm} from "@/components/create-user-form";
 import {apiRequest} from "@/lib/queryClient.ts";
-import {CreateCourseRequest, CreateSubgroupRequest} from "@shared/request-models.ts";
+import {CreateCourseRequest, CreateStudentRequest, CreateSubgroupRequest} from "@shared/request-models.ts";
+import NotFound from "@/pages/not-found.tsx";
 
 export default function AdminGroupDetails() {
-    const {toast} = useToast();
     const {groupId} = useParams();
     const {departmentId} = useParams();
+    const [group, setGroup] = useState<GroupResponse>();
+
+    const getGroup = async (): Promise<GroupResponse> => {
+        const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups/${groupId}`);
+        return await response.json();
+    };
+
+    useEffect(() => {
+        const fetchGroup = async () => {
+            try {
+                setGroup(await getGroup());
+            } catch (error) {
+                console.error("Error fetching department:", error);
+            }
+        };
+        fetchGroup();
+    }, []);
+
+    if (!departmentId || !groupId || !group) {
+        return NotFound();
+    }
+
+    const {toast} = useToast();
     const [, navigate] = useLocation();
     const {isOpen, toggle} = useModal();
     const [modalContent, setModalContent] = useState<string | null>(null);
 
-    const [group, setGroup] = useState<GroupResponse>();
     const [resetSubgroups, setResetSubgroups] = useState(true);
     const [resetCourses, setResetCourses] = useState(true);
     const [resetStudents, setResetStudents] = useState(true);
@@ -43,16 +62,6 @@ export default function AdminGroupDetails() {
         {
             accessorKey: "name",
             header: "Name",
-        },
-        {
-            id: "students",
-            header: "Students",
-            cell: ({row}) => {
-                const students = Object.values(testData.TEST_USERS).filter(
-                    u => u.role === UserRole.STUDENT && u.subgroupId === row.original.id
-                );
-                return students.length;
-            },
         },
         {
             id: "actions",
@@ -76,13 +85,13 @@ export default function AdminGroupDetails() {
         {
             accessorKey: "teacher",
             header: "Teacher",
-            cell: ({row}) => {row.original.teacher.fullName},
+            cell: ({row}) => {return row.original.teacher.fullName},
         }
     ];
 
-    const studentColumns: ColumnDef<User>[] = [
+    const studentColumns: ColumnDef<StudentResponse>[] = [
         {
-            accessorKey: "name",
+            accessorKey: "fullName",
             header: "Name",
         },
         {
@@ -93,8 +102,7 @@ export default function AdminGroupDetails() {
             id: "subgroup",
             header: "Subgroup",
             cell: ({row}) => {
-                const subgroup = Object.values(testData.TEST_SUBGROUPS).find(sg => sg.id === row.original.subgroupId);
-                return subgroup?.name || "-";
+                return row.original.subgroup.name || "-";
             },
         },
         {
@@ -111,21 +119,19 @@ export default function AdminGroupDetails() {
         },
     ];
 
-    const getGroup = async (): Promise<GroupResponse> => {
-        const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups/${groupId}`);
+
+    const getSubgroups = async (page: number, size: number): Promise<Page<SubgroupResponse>> => {
+        const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups/${groupId}/subgroups/page?page=${page}&size=${size}`);
         return await response.json();
     };
-
-    useEffect(() => {
-        const fetchDepartment = async () => {
-            try {
-                setGroup(await getGroup());
-            } catch (error) {
-                console.error("Error fetching department:", error);
-            }
-        };
-        fetchDepartment();
-    }, []);
+    const getCourses = async (page: number, size: number): Promise<Page<CourseResponse>> => {
+        const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups/${groupId}/courses?page=${page}&size=${size}`);
+        return await response.json();
+    };
+    const getStudents = async (page: number, size: number): Promise<Page<StudentResponse>> => {
+        const response = await apiRequest("GET", `/api/core/v1/students/page?department=${departmentId}&group=${groupId}&page=${page}&size=${size}`);
+        return await response.json();
+    };
 
     const handleCreateSubgroup = async (data: CreateSubgroupRequest) => {
         const response = await apiRequest("POST", `/api/core/v1/departments/${departmentId}/groups/${groupId}/subgroups`, data);
@@ -148,30 +154,16 @@ export default function AdminGroupDetails() {
         setResetCourses(!resetCourses);
         return await response.json();
     };
-    const handleCreateUser = async (data: any) => {
-        // Here you would typically make an API call to create the exam
-        console.log(data);
+    const handleCreateUser = async (data: CreateStudentRequest) => {
+        const response = await apiRequest("POST", `/api/core/v1/students`, data);
         toggle();
-        setModalContent(null);
         toast({
             title: "Success",
-            description: "User created successfully",
+            description: "Student created successfully",
         });
-    };
-
-    const getSubgroups = async (page: number, size: number): Promise<Page<SubgroupResponse>> => {
-        const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups/${groupId}/subgroups?page=${page}&size=${size}`);
+        setResetStudents(!resetStudents);
         return await response.json();
     };
-    const getCourses = async (page: number, size: number): Promise<Page<CourseResponse>> => {
-        const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups/${groupId}/courses?page=${page}&size=${size}`);
-        return await response.json();
-    };
-    // const getStudents = async (page: number, size: number): Promise<Page<SubgroupResponse>> => {
-    //     const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups/${groupId}/subgroups?page=${page}&size=${size}`);
-    //     return await response.json();
-    // };
-
     return (
         <div className="min-h-screen bg-background">
             <Navbar/>
@@ -255,11 +247,11 @@ export default function AdminGroupDetails() {
                             </Button>
                         </CardHeader>
                         <CardContent>
-                            {/*{getTable(*/}
-                            {/*    getStudents,*/}
-                            {/*    studentColumns,*/}
-                            {/*    resetStudents*/}
-                            {/*)}*/}
+                            {getTable(
+                                getStudents,
+                                studentColumns,
+                                resetStudents
+                            )}
                         </CardContent>
                     </Card>
                 </div>

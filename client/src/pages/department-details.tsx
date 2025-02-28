@@ -3,27 +3,46 @@ import {Navbar} from "@/components/navbar";
 import {BackButton} from "@/components/ui/back-button";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {getTable} from "@/components/data-table";
-import {User} from "@shared/schema";
 import {ColumnDef} from "@tanstack/react-table";
 import {Button} from "@/components/ui/button";
 import {ChevronRight} from "lucide-react";
-import * as testData from "@shared/test-data";
 import {useToast} from "@/hooks/use-toast";
 import useModal from "@/hooks/use-modal";
 import {CreateGroupForm} from "@/components/create-group-form";
 import Modal from "@/components/ui/modal";
 import {apiRequest} from "@/lib/queryClient.ts";
-import {DepartmentResponse, GroupResponse, Page} from "@shared/response-models.ts";
+import {DepartmentResponse, GroupResponse, Page, StudentResponse} from "@shared/response-models.ts";
 import {useEffect, useState} from "react";
 import {CreateGroupRequest} from "@shared/request-models.ts";
+import NotFound from "@/pages/not-found.tsx";
 
 export default function DepartmentDetails() {
   const { departmentId } = useParams();
+  const [department, setDepartment] = useState<DepartmentResponse>();
+  const getDepartment = async (): Promise<DepartmentResponse> => {
+    const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}`);
+    return await response.json();
+  };
+
+  useEffect(() => {
+    const fetchDepartment = async () => {
+      try {
+        setDepartment(await getDepartment());
+      } catch (error) {
+        console.error("Error fetching department:", error);
+      }
+    };
+    fetchDepartment();
+  }, []);
+
+  if (!departmentId || !department) {
+    return NotFound();
+  }
+
   const [, navigate] = useLocation();
   const { isOpen, toggle } = useModal();
   const { toast } = useToast();
 
-  const [department, setDepartment] = useState<DepartmentResponse>();
   const [resetGroups, setResetGroups] = useState(true);
 
   const groupColumns: ColumnDef<GroupResponse>[] = [
@@ -53,9 +72,9 @@ export default function DepartmentDetails() {
     },
   ];
 
-  const studentColumns: ColumnDef<User>[] = [
+  const studentColumns: ColumnDef<StudentResponse>[] = [
     {
-      accessorKey: "name",
+      accessorKey: "fullName",
       header: "Name",
     },
     {
@@ -70,25 +89,14 @@ export default function DepartmentDetails() {
       id: "group",
       header: "Group",
       cell: ({ row }) => {
-        const subgroup = Object.values(testData.TEST_SUBGROUPS).find(
-          (sg) => sg.id === row.original.subgroupId,
-        );
-        const group = subgroup
-          ? Object.values(testData.TEST_GROUPS).find(
-              (g) => g.id === subgroup.groupId,
-            )
-          : null;
-        return group?.name || "-";
+        return row.original.subgroup.group.name || "-";
       },
     },
     {
       id: "subgroup",
       header: "Subgroup",
       cell: ({ row }) => {
-        const subgroup = Object.values(testData.TEST_SUBGROUPS).find(
-          (sg) => sg.id === row.original.subgroupId,
-        );
-        return subgroup?.name || "-";
+        return row.original.subgroup.name || "-";
       },
     },
     {
@@ -105,21 +113,14 @@ export default function DepartmentDetails() {
     },
   ];
 
-  const getDepartment = async (): Promise<DepartmentResponse> => {
-    const depResponse = await apiRequest("GET", `/api/core/v1/departments/${departmentId}`);
-    return await depResponse.json();
+  const getGroups = async (page: number, size: number): Promise<Page<GroupResponse>> => {
+    const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups?page=${page}&size=${size}`);
+    return await response.json();
   };
-
-  useEffect(() => {
-    const fetchDepartment = async () => {
-      try {
-        setDepartment(await getDepartment());
-      } catch (error) {
-        console.error("Error fetching department:", error);
-      }
-    };
-    fetchDepartment();
-  }, []);
+  const getStudents = async (page: number, size: number): Promise<Page<StudentResponse>> => {
+    const response = await apiRequest("GET", `/api/core/v1/students/page?department=${departmentId}&page=${page}&size=${size}`);
+    return await response.json();
+  };
 
   const handleCreateGroup = async (data: any) : Promise<CreateGroupRequest> => {
     const depResponse = await apiRequest("POST", `/api/core/v1/departments/${departmentId}/groups`, data);
@@ -130,11 +131,6 @@ export default function DepartmentDetails() {
     });
     setResetGroups(!resetGroups);
     return await depResponse.json();
-  };
-
-  const getGroups = async (page: number, size: number): Promise<Page<GroupResponse>> => {
-    const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups?page=${page}&size=${size}`);
-    return await response.json();
   };
 
   return (
@@ -170,11 +166,11 @@ export default function DepartmentDetails() {
               <CardTitle>Students</CardTitle>
             </CardHeader>
             <CardContent>
-              {/*{getTable(*/}
-              {/*    getSubgroups,*/}
-              {/*    sub,*/}
-              {/*    resetSubgroups*/}
-              {/*)}*/}
+              {getTable(
+                  getStudents,
+                  studentColumns,
+                  true
+              )}
             </CardContent>
           </Card>
         </div>

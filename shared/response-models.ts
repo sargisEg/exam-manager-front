@@ -18,6 +18,14 @@ export interface UserResponse {
     role: UserRole;
 }
 
+export interface StudentResponse {
+    id: string;
+    email: string;
+    fullName: string;
+    phone: string;
+    subgroup: SubgroupResponse;
+}
+
 export interface DepartmentResponse {
     id: string;
     name: string;

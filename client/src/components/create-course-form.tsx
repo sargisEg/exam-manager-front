@@ -43,14 +43,14 @@ export function CreateCourseForm({onSubmit, departmentName, groupName}: {
     };
 
     useEffect(() => {
-        const fetchDepartment = async () => {
+        const fetchTeachers = async () => {
             try {
                 setTeachers(await getTeachers());
             } catch (error) {
                 console.error("Error fetching department:", error);
             }
         };
-        fetchDepartment();
+        fetchTeachers();
     }, []);
 
 
@@ -58,7 +58,6 @@ export function CreateCourseForm({onSubmit, departmentName, groupName}: {
         <Form {...form}>
             <form onSubmit={form.handleSubmit((data) => {
                 if (!data.teacherId) {
-                    console.error("Department ID is required");
                     return;
                 }
                 const createCourseData: CreateCourseRequest = {

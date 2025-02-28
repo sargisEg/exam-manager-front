@@ -2,29 +2,52 @@ import { useParams } from "wouter";
 import { Navbar } from "@/components/navbar";
 import { BackButton } from "@/components/ui/back-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DataTable } from "@/components/data-table";
-import { Exam, Subgroup, Course, User, UserRole } from "@shared/schema";
 import { ColumnDef } from "@tanstack/react-table";
-import * as testData from "@shared/test-data";
 import { CreateUserForm } from "@/components/create-user-form";
 import Modal from "@/components/ui/modal";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import useModal from "@/hooks/use-modal";
+import {Page, StudentResponse, SubgroupResponse} from "@shared/response-models.ts";
+import NotFound from "@/pages/not-found.tsx";
+import {apiRequest} from "@/lib/queryClient.ts";
+import {useEffect, useState} from "react";
+import {getTable} from "@/components/data-table.tsx";
+import {CreateStudentRequest} from "@shared/request-models.ts";
 
 export default function AdminSubgroupDetails() {
-  const { toast } = useToast();
   const { departmentId } = useParams();
   const { groupId } = useParams();
   const { subgroupId } = useParams();
-  const sub = subgroupId;
-  const group = testData.TEST_GROUPS[groupId || ""];
-  const subgroup = testData.TEST_SUBGROUPS[sub || ""];
-  const { isOpen, toggle } = useModal();
+  const [subgroup, setSubgroup] = useState<SubgroupResponse>();
 
-  const studentColumns: ColumnDef<User>[] = [
+  const getSubgroup = async (): Promise<SubgroupResponse> => {
+    const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups/${groupId}/subgroups/${subgroupId}`);
+    return await response.json();
+  };
+
+  useEffect(() => {
+    const fetchSubgroup = async () => {
+      try {
+        setSubgroup(await getSubgroup());
+      } catch (error) {
+        console.error("Error fetching department:", error);
+      }
+    };
+    fetchSubgroup();
+  }, []);
+
+  if (!departmentId || !groupId || !subgroupId || !subgroup) {
+    return NotFound();
+  }
+
+  const { toast } = useToast();
+  const { isOpen, toggle } = useModal();
+  const [resetStudents, setResetStudents] = useState(true);
+
+  const studentColumns: ColumnDef<StudentResponse>[] = [
     {
-      accessorKey: "name",
+      accessorKey: "fullName",
       header: "Name",
     },
     {
@@ -33,19 +56,22 @@ export default function AdminSubgroupDetails() {
     },
   ];
 
-  const handleCreateUser = async (data: any) => {
-    // Here you would typically make an API call to create the exam
-    console.log(data);
+  const getStudents = async (page: number, size: number): Promise<Page<StudentResponse>> => {
+    const response = await apiRequest("GET", `/api/core/v1/students/page?department=${departmentId}&group=${groupId}&subgroup=${subgroupId}&page=${page}&size=${size}`);
+    return await response.json();
+  };
+
+  const handleCreateUser = async (data: CreateStudentRequest) => {
+    const response = await apiRequest("POST", `/api/core/v1/students`, data);
     toggle();
     toast({
       title: "Success",
-      description: "User created successfully",
+      description: "Student created successfully",
     });
+    setResetStudents(!resetStudents);
+    return await response.json();
   };
 
-  if (!group) {
-    return <div>Group not found</div>;
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -53,9 +79,9 @@ export default function AdminSubgroupDetails() {
       <main className="container mx-auto px-4 py-8">
         <BackButton />
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">{subgroup.name}</h1>
+          <h1 className="text-3xl font-bold">{subgroup?.name}</h1>
           <p className="text-muted-foreground">
-            Academic Year: {group.startYear} - {group.endYear}
+            Academic Year: {subgroup?.group.startYear} - {subgroup?.group.endYear}
           </p>
         </div>
 
@@ -73,11 +99,11 @@ export default function AdminSubgroupDetails() {
               </Button>
             </CardHeader>
             <CardContent>
-              <DataTable 
-                columns={studentColumns} 
-                data={Object.values(testData.TEST_USERS).filter(u => subgroupId === u.subgroupId)} 
-                initialSorting={[{ id: "name", desc: false }]}
-              />
+              {getTable(
+                  getStudents,
+                  studentColumns,
+                  resetStudents
+              )}
             </CardContent>
           </Card>
         </div>
