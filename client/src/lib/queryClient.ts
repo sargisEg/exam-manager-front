@@ -1,5 +1,5 @@
 import {QueryClient, QueryFunction} from "@tanstack/react-query";
-import {SignInResponse} from "@shared/schema.ts";
+import {SignInResponse} from "@shared/response-models.ts";
 
 async function throwIfResNotOk(res: Response) {
     if (!res.ok) {

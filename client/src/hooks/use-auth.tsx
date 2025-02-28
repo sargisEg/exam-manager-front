@@ -1,7 +1,7 @@
 import { createContext, ReactNode, useContext } from "react";
 import {apiRequest, queryClient} from "@/lib/queryClient";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import {SignInResponse, UserResponse} from "@shared/schema";
+import {SignInResponse, UserResponse} from "@shared/response-models.ts";
 
 type AuthContextType = {
   user: UserResponse | null;

@@ -10,18 +10,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import * as testData from "@shared/test-data";
+import {CreateGroupRequest} from "@shared/request-models.ts";
 
-export function CreateGroupForm({ onSubmit, departmentId } : {
-  onSubmit: (data: any) => void;
-  departmentId: string | undefined;
+export function CreateGroupForm({ onSubmit, departmentName } : {
+  onSubmit: (data: CreateGroupRequest) => void;
+  departmentName: string | undefined;
 }) {
   const form = useForm({
     defaultValues: {
       name: "",
       startYear: new Date().getFullYear(),
       endYear: new Date().getFullYear() + 4,
-      departmentId: departmentId,
+      departmentName: departmentName,
     },
   });
 
@@ -82,11 +82,11 @@ export function CreateGroupForm({ onSubmit, departmentId } : {
 
         <FormField
           control={form.control}
-          name="departmentId"
-          render={({ field }) => (
+          name="departmentName"
+          render={() => (
             <FormItem>
               <FormLabel>Department</FormLabel>
-              <Input disabled value={Object.values(testData.TEST_DEPARTMENTS).find(d => d.id === field.value)?.name} />
+              <Input disabled value={departmentName} />
               <FormMessage />
             </FormItem>
           )}

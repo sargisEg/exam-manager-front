@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import {CreateTeacherRequest} from "@shared/request-model.ts";
+import {CreateTeacherRequest} from "@shared/request-models.ts";
 
 export function CreateTeacherForm({ onSubmit } : { onSubmit: (data: CreateTeacherRequest) => void }) {
   

@@ -3,7 +3,8 @@ import {Navbar} from "@/components/navbar";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {Button} from "@/components/ui/button";
-import {Department, DepartmentResponse, Page, User, UserResponse, UserRole,} from "@shared/schema";
+import {DepartmentResponse, Page, UserResponse, UserRole} from "@shared/response-models.ts";
+import {User} from "@shared/schema.ts";
 import {ColumnDef} from "@tanstack/react-table";
 import {useToast} from "@/hooks/use-toast";
 import {useLocation} from "wouter";
@@ -15,7 +16,7 @@ import {CreateTeacherForm} from "@/components/create-teacher-form";
 import {CreateDepartmentForm} from "@/components/create-department-form";
 import {useState} from "react";
 import {apiRequest} from "@/lib/queryClient.ts";
-import {CreateDepartmentRequest, CreateTeacherRequest} from "@shared/request-model.ts";
+import {CreateDepartmentRequest, CreateTeacherRequest} from "@shared/request-models.ts";
 
 const stats = [
     {
@@ -63,14 +64,10 @@ export default function AdminDashboard() {
         },
         {
             id: "groups",
-            header: "Groups",
+            header: "",
             cell: ({row}) => {
-                const groups = Object.values(testData.TEST_GROUPS).filter((g) => true); // In real app, filter by department
                 return (
                     <div className="flex items-center gap-2">
-            <span className="text-muted-foreground text-sm">
-              {groups.length} groups
-            </span>
                         <Button
                             variant="ghost"
                             size="sm"
@@ -178,40 +175,40 @@ export default function AdminDashboard() {
     ];
 
     const getDepartments = async (page: number, size: number): Promise<Page<DepartmentResponse>> => {
-        const depResponse = await apiRequest("GET", `/api/core/v1/departments?page=${page}&size=${size}`);
-        return await depResponse.json();
+        const response = await apiRequest("GET", `/api/core/v1/departments?page=${page}&size=${size}`);
+        return await response.json();
     };
     const getTeachers = async (page: number, size: number): Promise<Page<UserResponse>> => {
-        const depResponse = await apiRequest("GET", `/api/core/v1/teachers?page=${page}&size=${size}`);
-        return await depResponse.json();
+        const response = await apiRequest("GET", `/api/core/v1/teachers/page?page=${page}&size=${size}`);
+        return await response.json();
     };
     const getStudents = async (page: number, size: number): Promise<Page<DepartmentResponse>> => {
-        const depResponse = await apiRequest("GET", `/api/core/v1/departments?page=${page}&size=${size}`);
-        return await depResponse.json();
+        const response = await apiRequest("GET", `/api/core/v1/departments?page=${page}&size=${size}`);
+        return await response.json();
     };
 
     const handleCreateTeacher = async (data: CreateTeacherRequest) => {
-        const depResponse = await apiRequest("POST", `/api/core/v1/teachers`, data);
+        const response = await apiRequest("POST", `/api/core/v1/teachers`, data);
         toggle();
         setModalContent(null);
         toast({
             title: "Success",
-            description: "User created successfully",
+            description: "Teacehr created successfully",
         });
         setResetTeachers(!resetTeachers);
-        return await depResponse.json();
+        return await response.json();
     };
 
     const handleCreateDepartment = async (data: CreateDepartmentRequest) => {
-        const depResponse = await apiRequest("POST", `/api/core/v1/departments`, data);
+        const response = await apiRequest("POST", `/api/core/v1/departments`, data);
         toggle();
         setModalContent(null);
         toast({
             title: "Success",
-            description: "User created successfully",
+            description: "Department created successfully",
         });
         setResetDepartments(!resetDepartments);
-        return await depResponse.json();
+        return await response.json();
     };
 
     return (

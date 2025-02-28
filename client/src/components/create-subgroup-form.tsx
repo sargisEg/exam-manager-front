@@ -9,26 +9,19 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import * as testData from "@shared/test-data";
+import {CreateSubgroupRequest} from "@shared/request-models.ts";
 
-export function CreateSubgroupForm({ onSubmit, departmentId, groupId } : {
-  onSubmit: (data: any) => void;
-  departmentId: string | undefined;
-  groupId: string | undefined;
+export function CreateSubgroupForm({ onSubmit, departmentName, groupName } : {
+  onSubmit: (data: CreateSubgroupRequest) => void;
+  departmentName: string | undefined;
+  groupName: string | undefined;
 })  {
   const form = useForm({
     defaultValues: {
       name: "",
-      departmentId: departmentId,
-      groupId: groupId,
+      departmentName: departmentName,
+      groupName: groupName,
     },
   });
 
@@ -51,11 +44,11 @@ export function CreateSubgroupForm({ onSubmit, departmentId, groupId } : {
         
         <FormField
           control={form.control}
-          name="departmentId"
-          render={({ field }) => (
+          name="departmentName"
+          render={() => (
             <FormItem>
               <FormLabel>Department</FormLabel>
-              <Input disabled value={Object.values(testData.TEST_DEPARTMENTS).find(d => d.id === field.value)?.name} />
+              <Input disabled value={departmentName} />
               <FormMessage />
             </FormItem>
           )}
@@ -63,11 +56,11 @@ export function CreateSubgroupForm({ onSubmit, departmentId, groupId } : {
 
         <FormField
           control={form.control}
-          name="groupId"
-          render={({ field }) => (
+          name="groupName"
+          render={() => (
             <FormItem>
               <FormLabel>Group</FormLabel>
-              <Input disabled value={Object.values(testData.TEST_GROUPS).find(g => g.id === field.value)?.name} />
+              <Input disabled value={groupName} />
               <FormMessage />
             </FormItem>
           )}

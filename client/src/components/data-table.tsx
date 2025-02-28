@@ -16,13 +16,14 @@ import {
 } from "@/components/ui/table";
 import {Button} from "@/components/ui/button";
 import {useEffect, useState} from "react";
-import {Page} from "@shared/schema.ts";
+import {Page} from "@shared/response-models.ts";
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
     pageCount: number;
     pageIndex: number;
+    total: number;
     onPageChange: (pageIndex: number) => void;
     initialSorting: SortingState;
 }
@@ -75,6 +76,7 @@ export function getTable<T>(
                     data={content}
                     pageCount={pageCount}
                     pageIndex={pageIndex}
+                    total={totalElements}
                     onPageChange={handlePageChange}
                     initialSorting={initialSorting}
                 />
@@ -88,6 +90,7 @@ export function DataTable<TData, TValue>({
                                              columns,
                                              data,
                                              pageCount,
+                                             total,
                                              pageIndex,
                                              onPageChange,
                                              initialSorting,
@@ -158,7 +161,13 @@ export function DataTable<TData, TValue>({
                     </TableBody>
                 </Table>
             </div>
-            <div className="flex items-center justify-end space-x-2 py-4">
+            <div className="flex items-center justify-between space-x-2 py-4">
+                <div className="flex items-center justify-between space-x-2 py-4">
+                <span>
+                    {(pageIndex * 6) + 1}-{(pageIndex * 6) + table.getRowModel().rows?.length} of {total}
+                </span>
+                </div>
+                <div className="flex items-center justify-between space-x-2 py-4">
                 <Button
                     variant="outline"
                     size="sm"
@@ -176,8 +185,9 @@ export function DataTable<TData, TValue>({
                     Next
                 </Button>
                 <span>
-                Page {pageIndex + 1} of {pageCount}
+                    Page {pageIndex + 1} of {pageCount}
                 </span>
+                </div>
             </div>
         </div>
     );

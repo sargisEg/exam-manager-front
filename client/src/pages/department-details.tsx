@@ -1,27 +1,32 @@
-import { useParams } from "wouter";
-import { Navbar } from "@/components/navbar";
-import { BackButton } from "@/components/ui/back-button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DataTable } from "@/components/data-table";
-import { Department, Group, User, UserRole } from "@shared/schema";
-import { ColumnDef } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";
-import { ChevronRight } from "lucide-react";
-import { useLocation } from "wouter";
+import {useLocation, useParams} from "wouter";
+import {Navbar} from "@/components/navbar";
+import {BackButton} from "@/components/ui/back-button";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
+import {getTable} from "@/components/data-table";
+import {User} from "@shared/schema";
+import {ColumnDef} from "@tanstack/react-table";
+import {Button} from "@/components/ui/button";
+import {ChevronRight} from "lucide-react";
 import * as testData from "@shared/test-data";
-import { useToast } from "@/hooks/use-toast";
+import {useToast} from "@/hooks/use-toast";
 import useModal from "@/hooks/use-modal";
-import { CreateGroupForm } from "@/components/create-group-form";
+import {CreateGroupForm} from "@/components/create-group-form";
 import Modal from "@/components/ui/modal";
+import {apiRequest} from "@/lib/queryClient.ts";
+import {DepartmentResponse, GroupResponse, Page} from "@shared/response-models.ts";
+import {useEffect, useState} from "react";
+import {CreateGroupRequest} from "@shared/request-models.ts";
 
 export default function DepartmentDetails() {
   const { departmentId } = useParams();
   const [, navigate] = useLocation();
-  const department = testData.TEST_DEPARTMENTS[departmentId || ""];
   const { isOpen, toggle } = useModal();
   const { toast } = useToast();
-  
-  const groupColumns: ColumnDef<Group>[] = [
+
+  const [department, setDepartment] = useState<DepartmentResponse>();
+  const [resetGroups, setResetGroups] = useState(true);
+
+  const groupColumns: ColumnDef<GroupResponse>[] = [
     {
       accessorKey: "name",
       header: "Name",
@@ -100,20 +105,37 @@ export default function DepartmentDetails() {
     },
   ];
 
-  const handleCreateGroup = async (data: any) => {
-    // Here you would typically make an API call to create the exam
-    console.log(data);
+  const getDepartment = async (): Promise<DepartmentResponse> => {
+    const depResponse = await apiRequest("GET", `/api/core/v1/departments/${departmentId}`);
+    return await depResponse.json();
+  };
+
+  useEffect(() => {
+    const fetchDepartment = async () => {
+      try {
+        setDepartment(await getDepartment());
+      } catch (error) {
+        console.error("Error fetching department:", error);
+      }
+    };
+    fetchDepartment();
+  }, []);
+
+  const handleCreateGroup = async (data: any) : Promise<CreateGroupRequest> => {
+    const depResponse = await apiRequest("POST", `/api/core/v1/departments/${departmentId}/groups`, data);
     toggle();
     toast({
       title: "Success",
-      description: "User created successfully",
+      description: "Department created successfully",
     });
+    setResetGroups(!resetGroups);
+    return await depResponse.json();
   };
 
-  
-  if (!department) {
-    return <div>Department not found</div>;
-  }
+  const getGroups = async (page: number, size: number): Promise<Page<GroupResponse>> => {
+    const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups?page=${page}&size=${size}`);
+    return await response.json();
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -121,11 +143,11 @@ export default function DepartmentDetails() {
       <main className="container mx-auto px-4 py-8">
         <BackButton />
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">{department.name} Department</h1>
-          <p className="text-muted-foreground">Department Code: {department.nameShort}</p>
+          <h1 className="text-3xl font-bold">{department?.name} Department</h1>
+          <p className="text-muted-foreground">Department Code: {department?.nameShort}</p>
         </div>
         <Modal isOpen={isOpen} toggle={toggle}>
-          <CreateGroupForm onSubmit={handleCreateGroup} departmentId={departmentId}/>
+          <CreateGroupForm onSubmit={handleCreateGroup} departmentName={department?.name}/>
         </Modal>
 
         <div className="grid gap-6">
@@ -135,11 +157,11 @@ export default function DepartmentDetails() {
               <Button onClick={toggle}>Create Group</Button>
             </CardHeader>
             <CardContent>
-              <DataTable 
-                columns={groupColumns} 
-                data={Object.values(testData.TEST_GROUPS).filter(g => g.departmentId == departmentId)}
-                initialSorting={[{ id: "name", desc: false }]}
-              />
+              {getTable(
+                  getGroups,
+                  groupColumns,
+                  resetGroups
+              )}
             </CardContent>
           </Card>
 
@@ -148,12 +170,11 @@ export default function DepartmentDetails() {
               <CardTitle>Students</CardTitle>
             </CardHeader>
             <CardContent>
-              <DataTable 
-                columns={studentColumns} 
-                data={Object.values(testData.TEST_USERS)
-                .filter(u => u.role === UserRole.STUDENT)} 
-                initialSorting={[{ id: "name", desc: false }]}
-              />
+              {/*{getTable(*/}
+              {/*    getSubgroups,*/}
+              {/*    sub,*/}
+              {/*    resetSubgroups*/}
+              {/*)}*/}
             </CardContent>
           </Card>
         </div>
