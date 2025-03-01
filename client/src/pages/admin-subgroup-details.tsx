@@ -1,4 +1,4 @@
-import { useParams } from "wouter";
+import {useLocation, useParams} from "wouter";
 import { Navbar } from "@/components/navbar";
 import { BackButton } from "@/components/ui/back-button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,6 +15,7 @@ import {useEffect, useState} from "react";
 import {DynamicTable} from "@/components/data-table.tsx";
 import {CreateStudentRequest} from "@shared/request-models.ts";
 import Loading from "@/pages/loading.tsx";
+import {ChevronRight} from "lucide-react";
 
 export default function AdminSubgroupDetails() {
   const { departmentId } = useParams();
@@ -25,6 +26,7 @@ export default function AdminSubgroupDetails() {
   const { isOpen, toggle } = useModal();
   const [resetStudents, setResetStudents] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [, navigate] = useLocation();
 
   const getSubgroup = async (): Promise<SubgroupResponse> => {
     const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups/${groupId}/subgroups/${subgroupId}`);
@@ -59,6 +61,19 @@ export default function AdminSubgroupDetails() {
     {
       accessorKey: "email",
       header: "Email",
+    },
+
+    {
+      id: "actions",
+      cell: ({row}) => (
+          <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(`/student/${row.original.id}`)}
+          >
+            View Details <ChevronRight className="ml-2 h-4 w-4"/>
+          </Button>
+      ),
     },
   ];
 

@@ -12,7 +12,7 @@ import useModal from "@/hooks/use-modal";
 import Modal from "@/components/ui/modal";
 import {CreateTeacherForm} from "@/components/create-teacher-form";
 import {CreateDepartmentForm} from "@/components/create-department-form";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {apiRequest} from "@/lib/queryClient.ts";
 import {CreateDepartmentRequest, CreateTeacherRequest} from "@shared/request-models.ts";
 
@@ -123,6 +123,17 @@ export default function AdminDashboard() {
             ),
         },
     ];
+
+    useEffect(() => {
+        const fetchStudents = async () => {
+            try {
+                await getStudents(0, 1);
+            } catch (error) {
+                console.error("Error fetching department:", error);
+            }
+        };
+        fetchStudents();
+    }, []);
 
     const stats = [
         {
