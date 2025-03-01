@@ -1,6 +1,4 @@
 import { pgTable, text, integer, timestamp, boolean } from "drizzle-orm/pg-core";
-import { createInsertSchema } from "drizzle-zod";
-import { z } from "zod";
 
 export enum UserRole {
   STUDENT = "STUDENT",
@@ -80,26 +78,10 @@ export const examResults = pgTable("exam_results", {
   point: integer("point").notNull(),
 });
 
-export const teacherSubgroups = pgTable("teacher_subgroups", {
-  teacherId: text("teacher_id").references(() => users.id).notNull(),
-  subgroupId: text("subgroup_id").references(() => subgroups.id).notNull(),
-});
-
-export const insertUserSchema = createInsertSchema(users).pick({
-  name: true,
-  password: true,
-  email: true,
-  phone: true,
-  role: true,
-  subgroupId: true,
-});
-
 export type User = typeof users.$inferSelect;
-export type InsertUser = z.infer<typeof insertUserSchema>;
 export type Department = typeof departments.$inferSelect;
 export type Group = typeof groups.$inferSelect;
 export type Subgroup = typeof subgroups.$inferSelect;
 export type Course = typeof courses.$inferSelect;
 export type Exam = typeof exams.$inferSelect;
 export type ExamResult = typeof examResults.$inferSelect;
-export type TeacherSubgroup = typeof teacherSubgroups.$inferSelect;

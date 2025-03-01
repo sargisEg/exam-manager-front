@@ -5,6 +5,19 @@ export enum UserRole {
     ADMIN = "ADMIN"
 }
 
+export enum ExamStatus {
+    UPCOMING = "UPCOMING",
+    IN_PROGRESS = "IN_PROGRESS",
+    FINISHED = "FINISHED",
+    CANCELED = "CANCELED"
+}
+
+export enum ExamType {
+    MIDTERM = "MIDTERM",
+    GENERAL = "GENERAL",
+    REPEAT = "REPEAT"
+}
+
 export interface SignInResponse {
     token: string;
     refreshToken: string;
@@ -57,6 +70,26 @@ export interface CourseResponse {
     name: string;
     group: GroupResponse;
     teacher: UserResponse;
+}
+
+export interface ExamResponse {
+    id: string;
+    title: string;
+    course: CourseResponse;
+    subgroup: SubgroupResponse;
+    location: string;
+    startDate: number;
+    endDate: number;
+    maxPoints: number;
+    status: ExamStatus;
+    type: ExamType;
+}
+
+export interface ExamResultResponse {
+    id: string;
+    exam: ExamResponse;
+    studentId: string;
+    points: number;
 }
 
 export interface Page<T> {
