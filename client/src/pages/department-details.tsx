@@ -2,7 +2,7 @@ import {useLocation, useParams} from "wouter";
 import {Navbar} from "@/components/navbar";
 import {BackButton} from "@/components/ui/back-button";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {getTable} from "@/components/data-table";
+import {DynamicTable} from "@/components/data-table";
 import {ColumnDef} from "@tanstack/react-table";
 import {Button} from "@/components/ui/button";
 import {ChevronRight} from "lucide-react";
@@ -15,16 +15,22 @@ import {DepartmentResponse, GroupResponse, Page, StudentResponse} from "@shared/
 import {useEffect, useState} from "react";
 import {CreateGroupRequest} from "@shared/request-models.ts";
 import NotFound from "@/pages/not-found.tsx";
+import Loading from "@/pages/loading.tsx";
 
 export default function DepartmentDetails() {
+  const [, navigate] = useLocation();
+  const { isOpen, toggle } = useModal();
+  const { toast } = useToast();
+  const [resetGroups, setResetGroups] = useState(true);
+  const [loading, setLoading] = useState(true);
   const { departmentId } = useParams();
   const [department, setDepartment] = useState<DepartmentResponse>();
   const getDepartment = async (): Promise<DepartmentResponse> => {
     const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}`);
     return await response.json();
   };
-
   useEffect(() => {
+    setLoading(true);
     const fetchDepartment = async () => {
       try {
         setDepartment(await getDepartment());
@@ -32,18 +38,16 @@ export default function DepartmentDetails() {
         console.error("Error fetching department:", error);
       }
     };
-    fetchDepartment();
+    fetchDepartment().finally(() => setLoading(false));
   }, []);
 
-  if (!departmentId || !department) {
-    return NotFound();
+  if (loading) {
+    return <Loading />;
   }
 
-  const [, navigate] = useLocation();
-  const { isOpen, toggle } = useModal();
-  const { toast } = useToast();
-
-  const [resetGroups, setResetGroups] = useState(true);
+  if (!departmentId || !department) {
+    return <NotFound />;
+  }
 
   const groupColumns: ColumnDef<GroupResponse>[] = [
     {
@@ -153,11 +157,11 @@ export default function DepartmentDetails() {
               <Button onClick={toggle}>Create Group</Button>
             </CardHeader>
             <CardContent>
-              {getTable(
-                  getGroups,
-                  groupColumns,
-                  resetGroups
-              )}
+              <DynamicTable
+                  getData = {getGroups}
+                  columns = {groupColumns}
+                  reset = {resetGroups}
+              />
             </CardContent>
           </Card>
 
@@ -166,11 +170,11 @@ export default function DepartmentDetails() {
               <CardTitle>Students</CardTitle>
             </CardHeader>
             <CardContent>
-              {getTable(
-                  getStudents,
-                  studentColumns,
-                  true
-              )}
+              <DynamicTable
+                  getData = {getStudents}
+                  columns = {studentColumns}
+                  reset = {true}
+              />
             </CardContent>
           </Card>
         </div>

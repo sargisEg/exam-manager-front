@@ -28,12 +28,13 @@ interface DataTableProps<TData, TValue> {
     initialSorting: SortingState;
 }
 
-export function getTable<T>(
+interface dynamicTableProps<T> {
     getData: (pageIndex: number, pageSize: number) => Promise<Page<T>>,
     columns: ColumnDef<T>[],
     reset: boolean,
-) {
+}
 
+export function DynamicTable<T>({getData, columns, reset}: dynamicTableProps<T>) {
     const initialSorting: SortingState = [{id: "name", desc: false}];
     const [content, setContent] = useState<T[]>([]);
     const [pageIndex, setPageIndex] = useState(0);
@@ -58,6 +59,61 @@ export function getTable<T>(
         };
         loadData();
     }, [pageIndex, pageSize, reset]);
+
+    // Handle page change from DataTable
+    const handlePageChange = (newPageIndex: number) => {
+        if (newPageIndex >= 0 && newPageIndex < pageCount) {
+            setPageIndex(newPageIndex);
+        }
+    };
+
+    return (
+        <div>
+            {isLoading ? (
+                <div>Loading...</div>
+            ) : (
+                <DataTable
+                    columns={columns}
+                    data={content}
+                    pageCount={pageCount}
+                    pageIndex={pageIndex}
+                    total={totalElements}
+                    onPageChange={handlePageChange}
+                    initialSorting={initialSorting}
+                />
+            )}
+        </div>
+    );
+}
+
+interface StaticTableProps<T> {
+    data: T[];
+    columns: ColumnDef<T>[];
+}
+
+export function StaticTable<T>({data, columns}: StaticTableProps<T>) {
+    const initialSorting: SortingState = [{id: "name", desc: false}];
+    const [content, setContent] = useState<T[]>([]);
+    const [pageIndex, setPageIndex] = useState(0);
+    const [pageCount] = useState(Math.ceil(data.length / 6));
+    const [pageSize] = useState(6);
+    const [totalElements] = useState(data.length);
+    const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        const loadData = async () => {
+            setIsLoading(true);
+            try {
+                setContent(data.slice(pageIndex * pageSize, (pageIndex * pageSize) + pageSize));
+            } catch (error) {
+                console.error("Failed to fetch data:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        loadData();
+    }, [pageIndex, pageSize]);
+
 
     // Handle page change from DataTable
     const handlePageChange = (newPageIndex: number) => {
@@ -168,23 +224,23 @@ export function DataTable<TData, TValue>({
                 </span>
                 </div>
                 <div className="flex items-center justify-between space-x-2 py-4">
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onPageChange(pageIndex - 1)}
-                    disabled={!table.getCanPreviousPage()}
-                >
-                    Previous
-                </Button>
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => onPageChange(pageIndex + 1)}
-                    disabled={!table.getCanNextPage()}
-                >
-                    Next
-                </Button>
-                <span>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onPageChange(pageIndex - 1)}
+                        disabled={!table.getCanPreviousPage()}
+                    >
+                        Previous
+                    </Button>
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => onPageChange(pageIndex + 1)}
+                        disabled={!table.getCanNextPage()}
+                    >
+                        Next
+                    </Button>
+                    <span>
                     Page {pageIndex + 1} of {pageCount}
                 </span>
                 </div>

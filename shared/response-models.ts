@@ -18,6 +18,12 @@ export interface UserResponse {
     role: UserRole;
 }
 
+export interface TeacherResponse {
+    user: UserResponse;
+    subgroups: SubgroupResponse[];
+    courses: CourseResponse[];
+}
+
 export interface StudentResponse {
     id: string;
     email: string;

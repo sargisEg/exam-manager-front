@@ -12,14 +12,19 @@ import {Page, StudentResponse, SubgroupResponse} from "@shared/response-models.t
 import NotFound from "@/pages/not-found.tsx";
 import {apiRequest} from "@/lib/queryClient.ts";
 import {useEffect, useState} from "react";
-import {getTable} from "@/components/data-table.tsx";
+import {DynamicTable} from "@/components/data-table.tsx";
 import {CreateStudentRequest} from "@shared/request-models.ts";
+import Loading from "@/pages/loading.tsx";
 
 export default function AdminSubgroupDetails() {
   const { departmentId } = useParams();
   const { groupId } = useParams();
   const { subgroupId } = useParams();
   const [subgroup, setSubgroup] = useState<SubgroupResponse>();
+  const { toast } = useToast();
+  const { isOpen, toggle } = useModal();
+  const [resetStudents, setResetStudents] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   const getSubgroup = async (): Promise<SubgroupResponse> => {
     const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups/${groupId}/subgroups/${subgroupId}`);
@@ -27,6 +32,7 @@ export default function AdminSubgroupDetails() {
   };
 
   useEffect(() => {
+    setLoading(true);
     const fetchSubgroup = async () => {
       try {
         setSubgroup(await getSubgroup());
@@ -34,16 +40,16 @@ export default function AdminSubgroupDetails() {
         console.error("Error fetching department:", error);
       }
     };
-    fetchSubgroup();
+    fetchSubgroup().then(() => setLoading(false));
   }, []);
 
-  if (!departmentId || !groupId || !subgroupId || !subgroup) {
-    return NotFound();
+  if (loading) {
+    return <Loading />;
   }
 
-  const { toast } = useToast();
-  const { isOpen, toggle } = useModal();
-  const [resetStudents, setResetStudents] = useState(true);
+  if (!departmentId || !groupId || !subgroupId || !subgroup) {
+    return <NotFound />;
+  }
 
   const studentColumns: ColumnDef<StudentResponse>[] = [
     {
@@ -99,11 +105,11 @@ export default function AdminSubgroupDetails() {
               </Button>
             </CardHeader>
             <CardContent>
-              {getTable(
-                  getStudents,
-                  studentColumns,
-                  resetStudents
-              )}
+              <DynamicTable
+                  getData = {getStudents}
+                  columns = {studentColumns}
+                  reset = {resetStudents}
+              />
             </CardContent>
           </Card>
         </div>

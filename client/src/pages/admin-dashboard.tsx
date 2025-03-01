@@ -1,4 +1,4 @@
-import {getTable} from "@/components/data-table";
+import {DynamicTable} from "@/components/data-table";
 import {Navbar} from "@/components/navbar";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
@@ -235,11 +235,11 @@ export default function AdminDashboard() {
                             </Button>
                         </CardHeader>
                         <CardContent>
-                            {getTable(
-                                getDepartments,
-                                departmentColumns,
-                                resetDepartments
-                            )}
+                            <DynamicTable
+                                getData = {getDepartments}
+                                columns = {departmentColumns}
+                                reset = {resetDepartments}
+                            />
                         </CardContent>
                     </Card>
 
@@ -263,11 +263,11 @@ export default function AdminDashboard() {
                                     </Button>
                                 </CardHeader>
                                 <CardContent>
-                                    {getTable(
-                                        getTeachers,
-                                        teacherColumns,
-                                        resetTeachers
-                                    )}
+                                    <DynamicTable
+                                        getData = {getTeachers}
+                                        columns = {teacherColumns}
+                                        reset = {resetTeachers}
+                                    />
                                 </CardContent>
                             </Card>
                         </TabsContent>
@@ -278,11 +278,11 @@ export default function AdminDashboard() {
                                     <CardTitle>Students</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    {getTable(
-                                        getStudents,
-                                        studentColumns,
-                                        true
-                                    )}
+                                    <DynamicTable
+                                        getData = {getStudents}
+                                        columns = {studentColumns}
+                                        reset = {true}
+                                    />
                                 </CardContent>
                             </Card>
                         </TabsContent>

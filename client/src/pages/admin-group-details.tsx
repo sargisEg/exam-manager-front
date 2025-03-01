@@ -2,7 +2,7 @@ import {useParams} from "wouter";
 import {Navbar} from "@/components/navbar";
 import {BackButton} from "@/components/ui/back-button";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {getTable} from "@/components/data-table";
+import {DynamicTable} from "@/components/data-table";
 import {
     Page,
     GroupResponse,
@@ -23,31 +23,9 @@ import {CreateUserForm} from "@/components/create-user-form";
 import {apiRequest} from "@/lib/queryClient.ts";
 import {CreateCourseRequest, CreateStudentRequest, CreateSubgroupRequest} from "@shared/request-models.ts";
 import NotFound from "@/pages/not-found.tsx";
+import Loading from "@/pages/loading.tsx";
 
 export default function AdminGroupDetails() {
-    const {groupId} = useParams();
-    const {departmentId} = useParams();
-    const [group, setGroup] = useState<GroupResponse>();
-
-    const getGroup = async (): Promise<GroupResponse> => {
-        const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups/${groupId}`);
-        return await response.json();
-    };
-
-    useEffect(() => {
-        const fetchGroup = async () => {
-            try {
-                setGroup(await getGroup());
-            } catch (error) {
-                console.error("Error fetching department:", error);
-            }
-        };
-        fetchGroup();
-    }, []);
-
-    if (!departmentId || !groupId || !group) {
-        return NotFound();
-    }
 
     const {toast} = useToast();
     const [, navigate] = useLocation();
@@ -57,6 +35,37 @@ export default function AdminGroupDetails() {
     const [resetSubgroups, setResetSubgroups] = useState(true);
     const [resetCourses, setResetCourses] = useState(true);
     const [resetStudents, setResetStudents] = useState(true);
+
+    const {groupId} = useParams();
+    const {departmentId} = useParams();
+
+    const [loading, setLoading] = useState(true);
+    const [group, setGroup] = useState<GroupResponse>();
+
+    const getGroup = async (): Promise<GroupResponse> => {
+        const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups/${groupId}`);
+        return await response.json();
+    };
+
+    useEffect(() => {
+        setLoading(true);
+        const fetchGroup = async () => {
+            try {
+                setGroup(await getGroup());
+            } catch (error) {
+                console.error("Error fetching department:", error);
+            }
+        };
+        fetchGroup().then(() => setLoading(false));
+    }, []);
+
+    if (loading) {
+        return <Loading />;
+    }
+
+    if (!departmentId || !groupId || !group) {
+        return <NotFound />;
+    }
 
     const subgroupColumns: ColumnDef<SubgroupResponse>[] = [
         {
@@ -205,11 +214,11 @@ export default function AdminGroupDetails() {
                             </Button>
                         </CardHeader>
                         <CardContent>
-                            {getTable(
-                                getSubgroups,
-                                subgroupColumns,
-                                resetSubgroups
-                            )}
+                            <DynamicTable
+                                getData = {getSubgroups}
+                                columns = {subgroupColumns}
+                                reset = {resetSubgroups}
+                            />
                         </CardContent>
                     </Card>
 
@@ -226,11 +235,11 @@ export default function AdminGroupDetails() {
                             </Button>
                         </CardHeader>
                         <CardContent>
-                            {getTable(
-                                getCourses,
-                                courseColumns,
-                                resetCourses
-                            )}
+                            <DynamicTable
+                                getData = {getCourses}
+                                columns = {courseColumns}
+                                reset = {resetCourses}
+                            />
                         </CardContent>
                     </Card>
 
@@ -247,11 +256,11 @@ export default function AdminGroupDetails() {
                             </Button>
                         </CardHeader>
                         <CardContent>
-                            {getTable(
-                                getStudents,
-                                studentColumns,
-                                resetStudents
-                            )}
+                            <DynamicTable
+                                getData = {getStudents}
+                                columns = {studentColumns}
+                                reset = {resetStudents}
+                            />
                         </CardContent>
                     </Card>
                 </div>
