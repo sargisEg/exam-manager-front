@@ -203,7 +203,7 @@ export function CreateUserForm({onSubmit, departmentId, groupId, subgroupId}: {
                     />
                 }
 
-                <Button type="submit" className="w-full">Create Teacher</Button>
+                <Button type="submit" className="w-full">Create Student</Button>
             </form>
         </Form>
     );

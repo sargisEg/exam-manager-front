@@ -33,7 +33,6 @@ export interface UserResponse {
 
 export interface TeacherResponse {
     user: UserResponse;
-    subgroups: SubgroupResponse[];
     courses: CourseResponse[];
 }
 
@@ -81,6 +80,7 @@ export interface ExamResponse {
     startDate: number;
     endDate: number;
     maxPoints: number;
+    isGranted: boolean;
     status: ExamStatus;
     type: ExamType;
 }

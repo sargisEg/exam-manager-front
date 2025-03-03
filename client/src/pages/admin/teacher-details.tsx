@@ -1,12 +1,12 @@
 import {useParams} from "wouter";
-import {Navbar} from "@/components/navbar";
-import {BackButton} from "@/components/ui/back-button";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {StaticTable} from "@/components/data-table";
+import {Navbar} from "@/components/navbar.tsx";
+import {BackButton} from "@/components/ui/back-button.tsx";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card.tsx";
+import {StaticTable} from "@/components/data-table.tsx";
 import {ColumnDef} from "@tanstack/react-table";
 import NotFound from "@/pages/not-found.tsx";
 import {useEffect, useState} from "react";
-import {CourseResponse, GroupResponse, SubgroupResponse, TeacherResponse,} from "@shared/response-models.ts";
+import {CourseResponse, GroupResponse, TeacherResponse,} from "@shared/response-models.ts";
 import {apiRequest} from "@/lib/queryClient.ts";
 import Loading from "@/pages/loading.tsx";
 
@@ -53,20 +53,20 @@ export default function TeacherDetails() {
     },
   ];
 
-  const subgroupColumns: ColumnDef<SubgroupResponse>[] = [
-    {
-      accessorKey: "name",
-      header: "Name",
-    },
-    {
-      id: "group",
-      header: "Group",
-      cell: ({ row }) => {
-        return row.original.group.name;
-      },
-    },
-
-  ];
+  // const subgroupColumns: ColumnDef<SubgroupResponse>[] = [
+  //   {
+  //     accessorKey: "name",
+  //     header: "Name",
+  //   },
+  //   {
+  //     id: "group",
+  //     header: "Group",
+  //     cell: ({ row }) => {
+  //       return row.original.group.name;
+  //     },
+  //   },
+  //
+  // ];
 
   const courseColumns: ColumnDef<CourseResponse>[] = [
     {
@@ -122,7 +122,7 @@ export default function TeacherDetails() {
             </CardHeader>
             <CardContent>
               <StaticTable
-                  data = {teacher.subgroups.map((s) => s.group).filter(
+                  data = {teacher.courses.map((c) => c.group).filter(
                       (group, index, self) => index === self.findIndex((g) => g.id === group.id)
                   )}
                   columns = {groupColumns}
@@ -130,17 +130,17 @@ export default function TeacherDetails() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Subgroups</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <StaticTable
-                  data={teacher.subgroups}
-                  columns={subgroupColumns}
-              />
-            </CardContent>
-          </Card>
+          {/*<Card>*/}
+          {/*  <CardHeader>*/}
+          {/*    <CardTitle>Subgroups</CardTitle>*/}
+          {/*  </CardHeader>*/}
+          {/*  <CardContent>*/}
+          {/*    <StaticTable*/}
+          {/*        data={teacher.subgroups}*/}
+          {/*        columns={subgroupColumns}*/}
+          {/*    />*/}
+          {/*  </CardContent>*/}
+          {/*</Card>*/}
 
           <Card>
             <CardHeader>

@@ -1,14 +1,14 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
-import { Exam } from "@shared/schema";
 import { format, addDays, isBefore } from "date-fns";
 import { Pencil, Trash2 } from "lucide-react";
+import {ExamResponse} from "@shared/response-models.ts";
 
 export function createExamColumns(
-  onEdit: (exam: Exam) => void,
-  onRemove: (exam: Exam) => void,
-): ColumnDef<Exam>[] {
+  onEdit: (exam: ExamResponse) => void,
+  onRemove: (exam: ExamResponse) => void,
+): ColumnDef<ExamResponse>[] {
   return [
     {
       accessorKey: "title",

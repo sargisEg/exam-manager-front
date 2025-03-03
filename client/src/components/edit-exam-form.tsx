@@ -1,20 +1,21 @@
 
-import { useForm } from "react-hook-form";
+import {useForm} from "react-hook-form";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "./ui/form";
-import { Exam } from "@shared/schema";
+import {ExamResponse} from "@shared/response-models.ts";
+import {EditExamRequest} from "@shared/request-models.ts";
 
 interface EditExamFormProps {
-  exam: Exam;
-  onSubmit: (data: Partial<Exam>) => void;
+  exam: ExamResponse;
+  onSubmit: (data: EditExamRequest) => void;
 }
 
 export function EditExamForm({ exam, onSubmit }: EditExamFormProps) {
   const form = useForm({
     defaultValues: {
-      startDate: new Date(exam.startDate).toISOString().slice(0, 16),
-      endDate: new Date(exam.endDate).toISOString().slice(0, 16),
+      startDate: new Date(exam.startDate).getTime(),
+      endDate: new Date(exam.endDate).getTime(),
       location: exam.location,
       maxPoints: exam.maxPoints,
     },
@@ -22,7 +23,18 @@ export function EditExamForm({ exam, onSubmit }: EditExamFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit((data) => {
+          const editExamRequest: EditExamRequest = {
+              title: exam.title,
+              courseId: exam.course.id,
+              subgroupId: exam.subgroup.id,
+              location: data.location,
+              startDate: data.startDate,
+              endDate: data.endDate,
+              maxPoints: data.maxPoints,
+          }
+          onSubmit(editExamRequest);
+      })} className="space-y-4">
         <FormField
           control={form.control}
           name="startDate"

@@ -32,3 +32,13 @@ export interface CreateStudentRequest {
     password: string;
     subgroupId: string;
 }
+
+export interface EditExamRequest {
+    title: string;
+    courseId: string;
+    subgroupId: string
+    location: string;
+    startDate: number;
+    endDate: number;
+    maxPoints: number;
+}

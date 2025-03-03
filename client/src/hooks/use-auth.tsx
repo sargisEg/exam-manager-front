@@ -53,7 +53,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       localStorage.setItem('userId', userResponseJson.id);
       localStorage.setItem('email', userResponseJson.email);
 
-      await new Promise((resolve) => setTimeout(resolve, 2000));
       return userResponseJson;
     },
     onSuccess: (data : UserResponse) => {

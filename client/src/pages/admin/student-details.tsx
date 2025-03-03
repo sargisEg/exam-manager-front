@@ -1,8 +1,8 @@
 import {useParams} from "wouter";
-import {Navbar} from "@/components/navbar";
-import {BackButton} from "@/components/ui/back-button";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {DynamicTable} from "@/components/data-table";
+import {Navbar} from "@/components/navbar.tsx";
+import {BackButton} from "@/components/ui/back-button.tsx";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card.tsx";
+import {DynamicTable} from "@/components/data-table.tsx";
 import {ColumnDef} from "@tanstack/react-table";
 import {format} from "date-fns";
 import {useEffect, useState} from "react";

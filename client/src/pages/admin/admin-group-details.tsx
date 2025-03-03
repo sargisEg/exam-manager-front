@@ -1,8 +1,8 @@
 import {useParams} from "wouter";
-import {Navbar} from "@/components/navbar";
-import {BackButton} from "@/components/ui/back-button";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {DynamicTable} from "@/components/data-table";
+import {Navbar} from "@/components/navbar.tsx";
+import {BackButton} from "@/components/ui/back-button.tsx";
+import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card.tsx";
+import {DynamicTable} from "@/components/data-table.tsx";
 import {
     Page,
     GroupResponse,
@@ -10,16 +10,16 @@ import {
     CourseResponse, StudentResponse
 } from "@shared/response-models.ts";
 import {ColumnDef} from "@tanstack/react-table";
-import {Button} from "@/components/ui/button";
+import {Button} from "@/components/ui/button.tsx";
 import {ChevronRight} from "lucide-react";
 import {useLocation} from "wouter";
-import {useToast} from "@/hooks/use-toast";
-import useModal from "@/hooks/use-modal";
-import {CreateSubgroupForm} from "@/components/create-subgroup-form";
-import {CreateCourseForm} from "@/components/create-course-form";
-import Modal from "@/components/ui/modal";
+import {useToast} from "@/hooks/use-toast.ts";
+import useModal from "@/hooks/use-modal.tsx";
+import {CreateSubgroupForm} from "@/components/create-subgroup-form.tsx";
+import {CreateCourseForm} from "@/components/create-course-form.tsx";
+import Modal from "@/components/ui/modal.tsx";
 import {useEffect, useState} from "react";
-import {CreateUserForm} from "@/components/create-user-form";
+import {CreateUserForm} from "@/components/create-user-form.tsx";
 import {apiRequest} from "@/lib/queryClient.ts";
 import {CreateCourseRequest, CreateStudentRequest, CreateSubgroupRequest} from "@shared/request-models.ts";
 import NotFound from "@/pages/not-found.tsx";

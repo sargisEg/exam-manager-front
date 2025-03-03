@@ -1,16 +1,37 @@
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BadgeGray } from "@/components/ui/badge-gray";
-import { Exam } from "@shared/schema";
 import { format } from "date-fns";
-import { useLocation } from "wouter";
+import {ExamResponse} from "@shared/response-models.ts";
+import {useEffect, useState} from "react";
 
 interface ExamCalendarProps {
-  exams: Exam[];
+  getExams: () => Promise<ExamResponse[]>;
+  reset: boolean;
 }
 
-export function ExamCalendar({ exams }: ExamCalendarProps) {
+export function ExamCalendar({ getExams, reset }: ExamCalendarProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const [exams, setExams] = useState<ExamResponse[]>([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        const exams = await getExams();
+        setExams(exams);
+      } catch (error) {
+        console.error("Failed to fetch data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadData();
+  }, [reset]);
+
+  if (isLoading) return <div>Loading ... </div>;
+
+
   const examDates = exams.reduce((acc, exam) => {
     const date = format(new Date(exam.startDate), "yyyy-MM-dd");
     if (!acc[date]) {
@@ -18,8 +39,8 @@ export function ExamCalendar({ exams }: ExamCalendarProps) {
     }
     acc[date].push(exam);
     return acc;
-  }, {} as Record<string, Exam[]>);
-  const [, navigate] = useLocation();
+  }, {} as Record<string, ExamResponse[]>);
+
   const now = new Date();
   return (
     <Card>
@@ -61,7 +82,7 @@ export function ExamCalendar({ exams }: ExamCalendarProps) {
           </div>
           <div className="container mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4">
-              {Object.entries(examDates).filter(([date, exams]) => {
+              {Object.entries(examDates).filter(([date]) => {
                   return date >= format(now, "yyyy-MM-dd");
                 }).map(([date, exams]) => (
                 <div key={date} className="flex items-center gap-4 mb-1">
