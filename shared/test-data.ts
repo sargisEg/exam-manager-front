@@ -2,11 +2,9 @@ import {
   Exam,
   UserRole,
   User,
-  ExamResult,
   Course,
   Group,
   Subgroup,
-  Department
 } from "@shared/schema";
 
 export const TEST_EXAMS: Record<string, Exam> = {
@@ -427,26 +425,6 @@ export const TEST_SUBGROUPS: Record<string, Subgroup> = {
   //   groupId: "e9f0a1b2-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
   // },
 };
-export const TEST_EXAM_RESULTS: Record<string, ExamResult> = {
-  "result1": {
-    id: "result1",
-    studentId: "2",
-    examId: "37cacd3a-686f-47c9-9377-f3284c923e09",
-    point: 98,
-  },
-  "result2": {
-    id: "result2",
-    studentId: "2",
-    examId: "b7b00679-1e84-422f-9b33-5f501fe47c88",
-    point: 68,
-  },
-  "result3": {
-    id: "result3",
-    studentId: "2",
-    examId: "2f5ef059-84c5-47d3-a3ba-07c2cf710e0f",
-    point: 90,
-  },
-}
 export const TEST_STUDENTS: Record<string, User> = {
   "2": {
     id: "2",
@@ -458,101 +436,3 @@ export const TEST_STUDENTS: Record<string, User> = {
     subgroupId: "9c8b6d7e-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
   }
 }
-export const TEST_DEPARTMENTS: Record<string, Department> = {
-  "bca1f2b3-0a60-4b3a-a5e9-b9f1a3c1a0a1": {
-    id: "bca1f2b3-0a60-4b3a-a5e9-b9f1a3c1a0a1",
-    name: "Department 1",
-    nameShort: "D1",
-    headOfDepartment: "1"
-  },
-  "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1": {
-    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
-      name: "Department 2",
-      nameShort: "D2",
-      headOfDepartment: "1"
-  },
-  "1": {
-    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
-      name: "Department 2",
-      nameShort: "D2",
-      headOfDepartment: "1"
-  },
-  "2": {
-    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
-      name: "Department 2",
-      nameShort: "D2",
-      headOfDepartment: "1"
-  },
-  "3": {
-    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
-      name: "Department 2",
-      nameShort: "D2",
-      headOfDepartment: "1"
-  },
-  "4": {
-    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
-      name: "Department 2",
-      nameShort: "D2",
-      headOfDepartment: "1"
-  },
-  "5": {
-    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
-      name: "Department 2",
-      nameShort: "D2",
-      headOfDepartment: "1"
-  },
-  "6": {
-    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
-      name: "Department 2",
-      nameShort: "D2",
-      headOfDepartment: "1"
-  },
-  "7": {
-    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
-      name: "Department 2",
-      nameShort: "D2",
-      headOfDepartment: "1"
-  },
-  "8": {
-    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
-      name: "Department 2",
-      nameShort: "D2",
-      headOfDepartment: "1"
-  },
-  "9": {
-    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
-      name: "Department 2",
-      nameShort: "D2",
-      headOfDepartment: "1"
-  },
-  "10": {
-    id: "95b8a7c6-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
-      name: "Department 2",
-      nameShort: "D2",
-      headOfDepartment: "1"
-  }
-}
-export const TEST_USERS: Record<string, User> = {
-  "1": {
-    id: "1",
-    name: "Test Teacher",
-    password: "test",
-    email: "teacher@example.com",
-    phone: "1234567890",
-    role: UserRole.TEACHER,
-    subgroupId: null,
-  },
-  "2": {
-    id: "2",
-    name: "Test SYUDENT",
-    password: "test",
-    email: "student@example.com",
-    phone: "1234567890",
-    role: UserRole.STUDENT,
-    subgroupId: "9c8b6d7e-8f5f-4b3a-a5e9-b9f1a3c1a0a1",
-  }
-}
-export const TEST_TEACHER_SUBGROUPS = [
-  { teacherId: "1", subgroupId: "9c8b6d7e-8f5f-4b3a-a5e9-b9f1a3c1a0a1" },
-  { teacherId: "1", subgroupId: "a9b0c1d2-8f5f-4b3a-a5e9-b9f1a3c1a0a1" },
-]

@@ -31,7 +31,7 @@ export default function TeacherDashboard() {
   const [loading, setLoading] = useState(true);
 
   const getTeacher = async (): Promise<TeacherResponse> => {
-    const response = await apiRequest("GET", `/api/core/v1/teachers/${teacherId}`);
+    const response = await apiRequest("GET", `/api/core/v1/teachers/me`);
     return await response.json();
   };
   useEffect(() => {
@@ -53,8 +53,6 @@ export default function TeacherDashboard() {
   if (!teacherId || !teacher) {
     return <NotFound />;
   }
-
-  console.log(teacher);
 
   const groups = teacher.courses.map((s) => s.group).filter(
       (group, index, self) => index === self.findIndex((g) => g.id === group.id)

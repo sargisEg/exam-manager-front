@@ -5,10 +5,10 @@ import {Toaster} from "@/components/ui/toaster";
 import {AuthProvider} from "./hooks/use-auth";
 import NotFound from "@/pages/not-found";
 import AuthPage from "@/pages/auth-page";
-import StudentDashboard from "@/pages/student-dashboard";
+import StudentDashboard from "@/pages/student/student-dashboard.tsx";
 import TeacherDashboard from "@/pages/teacher/teacher-dashboard.tsx";
 import AdminDashboard from "@/pages/admin/admin-dashboard.tsx";
-import StudentCourseDetails from "@/pages/student-course-details";
+import StudentCourseDetails from "@/pages/student/student-course-details.tsx";
 import TeacherCourseDetails from "@/pages/teacher/teacher-course-details.tsx";
 import DepartmentDetails from "@/pages/admin/department-details.tsx";
 import TeacherGroupDetails from "@/pages/teacher/teacher-group-details.tsx";
@@ -82,13 +82,13 @@ function Router() {
                 allowedRoles={[UserRole.TEACHER]}
             />
             <ProtectedRoute
-                path="/course-student/:courseId"
-                component={StudentCourseDetails}
+                path="/student"
+                component={StudentDashboard}
                 allowedRoles={[UserRole.STUDENT]}
             />
             <ProtectedRoute
-                path="/"
-                component={StudentDashboard}
+                path="/department/:departmentId/student-group/:groupId/student-course/:courseId"
+                component={StudentCourseDetails}
                 allowedRoles={[UserRole.STUDENT]}
             />
             <Route component={NotFound}/>

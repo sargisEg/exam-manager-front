@@ -2,11 +2,9 @@ import passport from "passport";
 import { Express } from "express";
 import session from "express-session";
 import { storage } from "./storage";
-import { User as SelectUser } from "@shared/schema";
 
 declare global {
   namespace Express {
-    interface User extends SelectUser {}
   }
 }
 

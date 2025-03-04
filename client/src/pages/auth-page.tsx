@@ -11,14 +11,14 @@ import { useForm } from "react-hook-form";
 
 
 export default function AuthPage() {
-  const { user, loginMutation, registerMutation } = useAuth();
+  const { user, loginMutation } = useAuth();
   const [, setLocation] = useLocation();
 
   useEffect(() => {
     if (user) {
       switch (user.role) {
         case UserRole.STUDENT:
-          setLocation("/");
+          setLocation("/student");
           break;
         case UserRole.TEACHER:
           setLocation("/teacher");

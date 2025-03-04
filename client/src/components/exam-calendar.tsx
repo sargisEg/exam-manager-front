@@ -66,6 +66,9 @@ export function ExamCalendar({ getExams, reset }: ExamCalendarProps) {
                     return !!examDates[formattedDate];
                   }
                   return false;
+                },
+                now: (date) => {
+                  return format(date, "yyyy-MM-dd") === format(now, "yyyy-MM-dd");
                 }
               }}
               modifiersStyles={{
@@ -76,6 +79,10 @@ export function ExamCalendar({ getExams, reset }: ExamCalendarProps) {
                 pastExam: {
                   backgroundColor: "grey",
                   color: "white",
+                },
+                now: {
+                  borderColor: "black",
+                  borderWidth: 1,
                 }
               }}
             />
