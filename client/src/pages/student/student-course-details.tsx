@@ -93,7 +93,7 @@ export default function CourseDetails() {
     },
   ];
   const getExamResults = async (page: number, size: number): Promise<Page<ExamResultResponse>> => {
-    const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups/${groupId}/exam-results/courses/${courseId}?page=${page}&size=${size}`);
+    const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups/${groupId}/exam-results/me?courseId=${courseId}&page=${page}&size=${size}`);
     return await response.json() as Page<ExamResultResponse>;
   };
 

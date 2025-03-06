@@ -23,7 +23,6 @@ import NotFound from "@/pages/not-found.tsx";
 export default function TeacherGroupDetails() {
     const {groupId} = useParams();
     const {departmentId} = useParams();
-    const teacherId = localStorage.getItem("userId");
     const [, navigate] = useLocation();
     const [group, setGroup] = useState<GroupResponse>();
     const [teacher, setTeacher] = useState<TeacherResponse>();
@@ -35,7 +34,7 @@ export default function TeacherGroupDetails() {
     };
 
     const getTeacher = async (): Promise<TeacherResponse> => {
-        const response = await apiRequest("GET", `/api/core/v1/teachers/${teacherId}`);
+        const response = await apiRequest("GET", `/api/core/v1/teachers/me`);
         return await response.json();
     };
 

@@ -25,7 +25,7 @@ export function NotGradedExams({ getExams, reset }: NotGradedExamsProps) {
     loadData();
   }, [reset]);
 
-  if (exams && exams.some(e => e.status === ExamStatus.FINISHED && !e.isGranted)) {
+  if (exams && exams.some(e => e.status === ExamStatus.FINISHED && !e.isGraded)) {
     return (
         <Card className="cursor-pointer hover:bg-accent border-red-600" onClick={() => navigate('/ungraded-exams')}>
           <CardHeader>

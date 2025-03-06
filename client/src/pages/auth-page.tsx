@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/use-auth";
-import { UserRole } from "@shared/schema";
+import { UserRole } from "@shared/response-models.ts";
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";

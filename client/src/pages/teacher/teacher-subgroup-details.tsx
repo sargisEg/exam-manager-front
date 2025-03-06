@@ -12,7 +12,6 @@ import { EditExamForm } from "@/components/edit-exam-form.tsx";
 import {useEffect, useState} from 'react'
 import {
   ExamResponse,
-  ExamResultResponse,
   ExamStatus,
   Page,
   StudentResponse,
@@ -22,16 +21,19 @@ import {apiRequest} from "@/lib/queryClient.ts";
 import Loading from "@/pages/loading.tsx";
 import NotFound from "@/pages/not-found.tsx";
 import {EditExamRequest} from "@shared/request-models.ts";
+import {RemoveExamForm} from "@/components/remove-exam-form.tsx";
 
 export default function TeacherSubgroupDetails() {
   const { departmentId } = useParams();
   const { groupId } = useParams();
   const { subgroupId } = useParams();
   const [subgroup, setSubgroup] = useState<SubgroupResponse>();
-  // const { isOpen, toggle } = useModal();
   const [loading, setLoading] = useState(true);
   const [editingExam, setEditingExam] = useState<ExamResponse | null>(null);
+  const [removingExam, setRemovingExam] = useState<ExamResponse | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const [resetExams, setResetExams] = useState(true);
   const { toast } = useToast();
 
   const getSubgroup = async (): Promise<SubgroupResponse> => {
@@ -60,11 +62,11 @@ export default function TeacherSubgroupDetails() {
   }
 
 
-  const pastExamColumns: ColumnDef<ExamResultResponse>[] =[
+  const pastExamColumns: ColumnDef<ExamResponse>[] =[
     {
       accessorKey: "title",
       header: "Title",
-      cell: ({ row }) => row.original.exam.title,
+      cell: ({ row }) => row.original.title,
     },
     {
       accessorKey: "subgroupName",
@@ -74,17 +76,17 @@ export default function TeacherSubgroupDetails() {
     {
       accessorKey: "type",
       header: "Type",
-      cell: ({ row }) => row.original.exam.type,
+      cell: ({ row }) => row.original.type,
     },
     {
       accessorKey: "startDate",
       header: "Date",
-      cell: ({ row }) => format(new Date(row.original.exam.startDate), "Pp"),
+      cell: ({ row }) => format(new Date(row.original.startDate), "Pp"),
     },
     {
       accessorKey: "maxPoints",
       header: "Max Points",
-      cell: ({ row }) => row.original.exam.maxPoints,
+      cell: ({ row }) => row.original.maxPoints,
     }
   ];
 
@@ -106,29 +108,38 @@ export default function TeacherSubgroupDetails() {
 
   const handleEditExam = (exam: ExamResponse) => {
     setEditingExam(exam);
+    setIsRemoveModalOpen(false);
     setIsEditModalOpen(true);
   };
 
   const handleRemoveExam = (exam: ExamResponse) => {
-    // Here you would typically make an API call to remove the exam
-    console.log("Removing exam:", exam.id);
+    setRemovingExam(exam);
+    setIsEditModalOpen(false);
+    setIsRemoveModalOpen(true);
+  };
+
+  const handleRemove = async (examId: string) => {
+    await apiRequest("DELETE", `/api/core/v1/departments/${departmentId}/groups/${groupId}/exams/${examId}`);
+    setIsRemoveModalOpen(false);
+    setRemovingExam(null);
     toast({
       title: "Success",
       description: "Exam removed successfully",
     });
+    setResetExams(!resetExams);
   };
 
-  const handleSaveEdit = (data: EditExamRequest) => {
-    // Here you would typically make an API call to update the exam
-    console.log("Saving exam changes:", { examId: editingExam?.id, ...data });
+  const handleSaveEdit = async (examId: string, data: EditExamRequest) => {
+    await apiRequest("PUT", `/api/core/v1/departments/${departmentId}/groups/${groupId}/exams/${examId}`, data);
     setIsEditModalOpen(false);
     setEditingExam(null);
     toast({
       title: "Success",
       description: "Exam updated successfully",
     });
+    setResetExams(!resetExams);
   };
-  
+
   const examColumns = createExamColumns(handleEditExam, handleRemoveExam);
 
 
@@ -137,13 +148,13 @@ export default function TeacherSubgroupDetails() {
     return await response.json();
   };
 
-  const getExamResults = async (page: number, size: number): Promise<Page<ExamResultResponse>> => {
-    const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups/${groupId}/exam-results/subgroups/${subgroupId}?page=${page}&size=${size}`);
-    return await response.json() as Page<ExamResultResponse>;
+  const getExamResults = async (page: number, size: number): Promise<Page<ExamResponse>> => {
+    const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups/${groupId}/exams/subgroups/${subgroupId}?status=${ExamStatus.FINISHED}&page=${page}&size=${size}`);
+    return await response.json() as Page<ExamResponse>;
   };
 
   const getExams = async (page: number, size: number): Promise<Page<ExamResponse>> => {
-    const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups/${groupId}/exams/subgroups/${subgroupId}?status=${ExamStatus.FINISHED}&page=${page}&size=${size}`);
+    const response = await apiRequest("GET", `/api/core/v1/departments/${departmentId}/groups/${groupId}/exams/subgroups/${subgroupId}?status=${ExamStatus.UPCOMING}&page=${page}&size=${size}`);
     return await response.json() as Page<ExamResponse>;
   };
 
@@ -166,7 +177,7 @@ export default function TeacherSubgroupDetails() {
               <CardTitle>Exams</CardTitle>
             </CardHeader>
             <CardContent>
-              <DynamicTable getData={getExams} columns={examColumns} reset={true}/>
+              <DynamicTable getData={getExams} columns={examColumns} reset={resetExams}/>
             </CardContent>
           </Card>
           <Card>
@@ -194,6 +205,15 @@ export default function TeacherSubgroupDetails() {
         >
           {editingExam && (
             <EditExamForm exam={editingExam} onSubmit={handleSaveEdit} />
+          )}
+        </Modal>
+        <Modal
+            isOpen={isRemoveModalOpen}
+            toggle={() => setIsRemoveModalOpen(false)}
+            title="Remove Exam"
+        >
+          {removingExam && (
+              <RemoveExamForm exam={removingExam} onSubmit={handleRemove}/>
           )}
         </Modal>
       </main>

@@ -80,7 +80,7 @@ export interface ExamResponse {
     startDate: number;
     endDate: number;
     maxPoints: number;
-    isGranted: boolean;
+    isGraded: boolean;
     status: ExamStatus;
     type: ExamType;
 }

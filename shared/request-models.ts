@@ -1,3 +1,5 @@
+import {ExamType} from "@shared/response-models.ts";
+
 export interface CreateDepartmentRequest {
     name: string;
     nameShort: string;
@@ -33,10 +35,19 @@ export interface CreateStudentRequest {
     subgroupId: string;
 }
 
-export interface EditExamRequest {
+export interface CreateExamRequest {
     title: string;
     courseId: string;
     subgroupId: string
+    location: string;
+    startDate: number;
+    endDate: number;
+    maxPoints: number;
+    type: ExamType;
+}
+
+export interface EditExamRequest {
+    title: string;
     location: string;
     startDate: number;
     endDate: number;

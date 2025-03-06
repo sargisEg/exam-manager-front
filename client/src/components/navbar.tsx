@@ -6,23 +6,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { UserRole } from "@shared/schema";
+import { UserRole } from "@shared/response-models.ts";
 import { Link } from "wouter";
 import { User } from "lucide-react";
 
 export function Navbar() {
-  const { user, logoutMutation } = useAuth();
+  const { user } = useAuth();
 
   const getHomeLink = () => {
     switch (user?.role) {
       case UserRole.STUDENT:
-        return "/";
+        return "/student";
       case UserRole.TEACHER:
         return "/teacher";
       case UserRole.ADMIN:
         return "/admin";
       default:
-        return "/";
+        return "/auth";
     }
   };
 
@@ -47,7 +47,7 @@ export function Navbar() {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => {
                   localStorage.clear();
-                  window.location.href = "/";
+                  window.location.href = "/auth";
                 }}>
                   Logout
                 </DropdownMenuItem>

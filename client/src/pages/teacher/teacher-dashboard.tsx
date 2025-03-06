@@ -21,6 +21,7 @@ import {apiRequest} from "@/lib/queryClient.ts";
 import Loading from "@/pages/loading.tsx";
 import NotFound from "@/pages/not-found.tsx";
 import {NotGradedExams} from "@/components/not-graded-exams.tsx";
+import {CreateExamRequest} from "@shared/request-models.ts";
 
 export default function TeacherDashboard() {
   const { toast } = useToast();
@@ -29,6 +30,7 @@ export default function TeacherDashboard() {
   const { isOpen, toggle } = useModal();
   const [teacher, setTeacher] = useState<TeacherResponse>();
   const [loading, setLoading] = useState(true);
+  const [resetExams, setResetExams] = useState(true);
 
   const getTeacher = async (): Promise<TeacherResponse> => {
     const response = await apiRequest("GET", `/api/core/v1/teachers/me`);
@@ -122,14 +124,15 @@ export default function TeacherDashboard() {
     },
   ];
 
-  const handleCreateExam = async (data: any) => {
-    // Here you would typically make an API call to create the exam
-    console.log(data);
+  const handleCreateExam = async ( body: CreateExamRequest, departmentId: string, groupId: string ) => {
+    const response = await apiRequest("POST", `/api/core/v1/departments/${departmentId}/groups/${groupId}/exams`, body);
     toggle();
     toast({
       title: "Success",
       description: "Exam created successfully",
     });
+    setResetExams(!resetExams);
+    return await response.json();
   };
 
   const getExams = async (): Promise<ExamResponse[]> => {
@@ -146,7 +149,7 @@ export default function TeacherDashboard() {
           <Button onClick={toggle}>Create Exam</Button>
         </div>
         <Modal isOpen={isOpen} toggle={toggle} title="Create New Exam">
-          <ExamForm onSubmit={handleCreateExam} />
+          <ExamForm onSubmit={handleCreateExam} courses={teacher.courses} />
         </Modal>
 
         <div className="grid gap-4 md:grid-cols-2 mb-8">
@@ -166,7 +169,7 @@ export default function TeacherDashboard() {
         </div>
 
         <div className="grid gap-6">
-          <ExamCalendar getExams={getExams} reset={true} />
+          <ExamCalendar getExams={getExams} reset={resetExams} />
           <NotGradedExams getExams={getExams} reset={true} />
           <Card>
             <CardHeader>
